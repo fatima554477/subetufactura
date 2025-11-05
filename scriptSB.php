@@ -788,6 +788,211 @@ $('#mensajeNOTAS').html("<span id='ACTUALIZADO' >"+data+"</span>");
 });
 
 
+  //////////////////NUEVO DOCUMENTO//////////////////////////////////////////////////////////////////////////
+
+
+$(document).on('click', '.view_dataNUEVOdocumento', function(){
+  //$('#dataModal').modal();
+  var personal_id = $(this).attr("id");
+  $.ajax({
+   url:"proveedores/VistaPreviaNUEVODOCU.php",
+   method:"POST",
+   data:{personal_id:personal_id},
+    beforeSend:function(){  
+    $('#mensajeDOCUnuevo').html('CARGANDO'); 
+    },    
+   success:function(data){
+    $('#personal_detalles').html(data);
+    $('#dataModal').modal('show');
+   }
+  });
+ });
+
+$(document).on('click', '.view_databorraNUEVOdocumento', function(){
+
+  var borra_id_NUEVOD = $(this).attr("id");
+  var BORRARNUEVOFISCAL = "BORRARNUEVOFISCAL";
+
+  //AGREGAR
+    $('#personal_detalles3').html();
+    $('#dataModal3').modal('show');
+  $('#btnYes').click(function() {
+  //AGREGAR
+
+  
+  $.ajax({
+   url:"subirfactura/controladorSB.php",
+   method:"POST",
+   data:{borra_id_NUEVOD:borra_id_NUEVOD,BORRARNUEVOFISCAL:BORRARNUEVOFISCAL},
+   
+    beforeSend:function(){  
+    $('#mensajeDOCUnuevo').html('CARGANDO'); 
+    },    
+   success:function(data){
+	   			$('#dataModal3').modal('hide');	   
+			$("#mensajeDOCUnuevo").html("<span id='ACTUALIZADO' >"+data+"</span>").fadeIn().delay(2000).fadeOut(); 			
+			$("#reseteateNUEVO").load(location.href + " #reseteateNUEVO");
+   }
+  });
+  
+    //AGREGAR	
+	});
+  //AGREGAR	 
+  
+ });
+
+
+$("#enviarNUEVOdocu").click(function(){
+
+const formData = new FormData($('#DOCUMENTONUEVOform')[0]);
+
+$.ajax({
+   url:"subirfactura/controladorSB.php",
+    type: 'POST',
+    dataType: 'html',
+    data: formData,
+    cache: false,
+    contentType: false,
+    processData: false
+}).done(function(data) {
+
+		if($.trim(data)=='Ingresado' || $.trim(data)=='Actualizado'){	
+
+			$("#documentoslegales1a12").load(location.href + " #documentoslegales1a12");
+			$("#reseteateNUEVO").load(location.href + " #reseteateNUEVO");			
+			$("#mensajeDOCUnuevo").html("<span id='ACTUALIZADO' >"+data+"</span>").fadeIn().delay(2000).fadeOut(); 
+			}else{
+			$("#mensajeDOCUnuevo").html(data);
+		}
+})
+.fail(function() {
+    console.log("detect error");
+});
+});
+
+
+
+//*DOCUMENTOS FISCALES DEL PROVEEDOR*/ //////////////////////////////////////////////////////////////////
+
+
+
+
+
+$(document).on('click', '.view_datadocufiscalmodifica', function(){
+
+  var personal_id = $(this).attr("id");
+  $.ajax({
+   url:"proveedores/VistaPreviaDOCUMENTOfiscal.php",
+   method:"POST",
+   data:{personal_id:personal_id},
+    beforeSend:function(){  
+    $('#mensajeDOCUFISCAL').html('CARGANDO'); 
+    },    
+   success:function(data){
+    $('#personal_detalles').html(data);
+    $('#dataModal').modal('show');
+   }
+  });
+ });
+
+$(document).on('click', '.view_datadocufiscalborrar', function(){
+ 
+  var borra_id_FISCAL = $(this).attr("id");
+  var borradocufiscal = "borradocufiscal";
+
+
+    $('#personal_detalles3').html();
+    $('#dataModal3').modal('show');
+  $('#btnYes').click(function() {
+  //AGREGAR
+
+  
+  $.ajax({
+   url:"subirfactura/controladorSB.php",
+   method:"POST",
+   data:{borra_id_FISCAL:borra_id_FISCAL,borradocufiscal:borradocufiscal},
+   
+    beforeSend:function(){  
+    $('#mensajeDOCUFISCAL').html('CARGANDO'); 
+    },    
+   success:function(data){
+	   			$('#dataModal3').modal('hide');	   
+			$("#mensajeDOCUFISCAL").html("<span id='ACTUALIZADO' >"+data+"</span>").fadeIn().delay(2000).fadeOut(); 			
+			$("#resetedocufiscal").load(location.href + " #resetedocufiscal");
+   }
+  });
+    //AGREGAR	
+	});
+  //AGREGAR	 
+  
+ });
+
+
+
+$("#enviarDOCUMENTOSFISCALES").click(function(){
+	/*nuevo script pbajar archivos y datos*/
+const formData = new FormData($('#DOCUFISCALform')[0]);
+
+$.ajax({
+   url:"subirfactura/controladorSB.php",
+    type: 'POST',
+    dataType: 'html',
+    data: formData,
+    cache: false,
+    contentType: false,
+    processData: false
+}).done(function(data) {
+
+		if($.trim(data)=='Ingresado' || $.trim(data)=='Actualizado'){	
+			$("#DOCUFISCALform")[0].reset();
+			$("#resetedocufiscal").load(location.href + " #resetedocufiscal");
+			$("#mensajeDOCUFISCAL").html("<span id='ACTUALIZADO' >"+data+"</span>").fadeIn().delay(2000).fadeOut(); 
+			}else{
+			$("#mensajeDOCUFISCAL").html(data).fadeIn().delay(2000).fadeOut(); 
+		}
+})
+.fail(function() {
+    console.log("detect error");
+});
+});
+
+//SCRIPT enviar EMAIL //
+$(document).on('click', '#enviar_email_DOCUFISCAL', function(){
+var ENVIAR_EMAIL_DOCUFISCAL = $('#ENVIAR_EMAIL_DOCUFISCAL').val();
+
+
+        var myCheckboxes = new Array();
+        $("input:checked").each(function() {
+           myCheckboxes.push($(this).val());
+        });
+var dataString = $("#form_emai_docuFISCAL").serialize();
+
+
+
+$.ajax({
+url:'subirfactura/controladorSB.php',
+method:'POST',
+dataType: 'html',
+
+data: dataString+{ENVIAR_EMAIL_DOCUFISCAL:ENVIAR_EMAIL_DOCUFISCAL},
+
+
+beforeSend:function(){
+$('#mensajeDOCUFISCAL').html('CARGANDO');
+},
+success:function(data){
+$('#mensajeDOCUFISCAL').html("<span id='ACTUALIZADO' >"+data+"</span>").fadeIn().delay(2000).fadeOut(); 
+
+}
+});
+});
+
+
+
+
+
+
+
 
 
 

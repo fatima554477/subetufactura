@@ -24,7 +24,14 @@ $borrasbdoc = isset($_POST["borrasbdoc"])?$_POST["borrasbdoc"]:"";
 $hNOTAS = isset($_POST["hNOTAS"])?$_POST["hNOTAS"]:"";//hNOTAS
 $enviarNOTAS = isset($_POST["enviarNOTAS"])?$_POST["enviarNOTAS"]:"";
 $IpNOTAS = isset($_POST["IpNOTAS"])?$_POST["IpNOTAS"]:"";
+$DOCUMENTO_FISCAL = isset($_POST["DOCUMENTO_FISCAL"])?$_POST["DOCUMENTO_FISCAL"]:"";
+$enviarnuevo_FISCAL = isset($_POST["enviarnuevo_FISCAL"])?$_POST["enviarnuevo_FISCAL"]:"";
+$BORRARNUEVOFISCAL = isset($_POST["BORRARNUEVOFISCAL"])?$_POST["BORRARNUEVOFISCAL"]:"";
 
+$validaDOCUMENTOSFISCAL = isset($_POST["validaDOCUMENTOSFISCAL"])?$_POST["validaDOCUMENTOSFISCAL"]:"";
+$ENVIAFISCAL = isset($_POST["ENVIAFISCAL"])?$_POST["ENVIAFISCAL"]:"";
+$borradocufiscal = isset($_POST["borradocufiscal"])?$_POST["borradocufiscal"]:"";
+$ENVIAR_EMAIL_DOCUFISCAL = isset($_POST["ENVIAR_EMAIL_DOCUFISCAL"])?$_POST["ENVIAR_EMAIL_DOCUFISCAL"]:"";
 
 
 
@@ -45,10 +52,109 @@ $pasarDID = isset($_POST['pasarDID'])?$_POST['pasarDID']:'';
 $SUBEFACTURA->datos_bancario_default($pasarDID,$pasarD_text);
 }
 
+  
+ elseif($validaDOCUMENTOSFISCAL == 'validaDOCUMENTOSFISCAL' or $ENVIAFISCAL == 'ENVIAFISCAL'){
+	 
+if( $_FILES["ADJUNTAR_DOCUMENTO_LEGAL"] == true){
+$ADJUNTAR_DOCUMENTO_LEGAL = $conexion->solocargar("ADJUNTAR_DOCUMENTO_LEGAL");
+}if($ADJUNTAR_DOCUMENTO_LEGAL=='2' or $ADJUNTAR_DOCUMENTO_LEGAL=='' or $ADJUNTAR_DOCUMENTO_LEGAL=='1'){
+	$ADJUNTAR_DOCUMENTO_LEGAL1="";
+} else{
+ $ADJUNTAR_DOCUMENTO_LEGAL1 = $ADJUNTAR_DOCUMENTO_LEGAL;
+}	 
+	 
+$DOCUMENTO_LEGAL = isset($_POST["DOCUMENTO_LEGAL"])?$_POST["DOCUMENTO_LEGAL"]:"";
+
+$ADJUNTAR_DOCUMENTO_OBSERVACIONES = isset($_POST["ADJUNTAR_DOCUMENTO_OBSERVACIONES"])?$_POST["ADJUNTAR_DOCUMENTO_OBSERVACIONES"]:"";
+$FECHA_ULTIMA_DOCUMEN = isset($_POST["FECHA_ULTIMA_DOCUMEN"])?$_POST["FECHA_ULTIMA_DOCUMEN"]:"";
+$validaDOCUMENTOSFISCAL = isset($_POST["validaDOCUMENTOSFISCAL"])?$_POST["validaDOCUMENTOSFISCAL"]:"";
+$IPdocumentosfiscales = isset($_POST["IPdocumentosfiscales"])?$_POST["IPdocumentosfiscales"]:""; 
+//ENVIAFISCAL
+
+//print_r($_POST);
+	echo $SUBEFACTURA->documentofiscal ($DOCUMENTO_LEGAL ,$ADJUNTAR_DOCUMENTO_LEGAL, $ADJUNTAR_DOCUMENTO_OBSERVACIONES , $FECHA_ULTIMA_DOCUMEN , $validaDOCUMENTOSFISCAL,$IPdocumentosfiscales,$ENVIAFISCAL);
+}
+
+elseif($ENVIAR_EMAIL_DOCUFISCAL ==true){
+$conexion2 = new herramientas();
+$NOMBRE_1 = 'Peticion';
+$EMAILnombre = array($ENVIAR_EMAIL_DOCUFISCAL=>$NOMBRE_1);
+$adjuntos = array(''=>'');
+$Subject = 'DATOS SOLICITADOS';
+/*nuevo*/
+$array = isset($_POST['fiscalesdocu'])?$_POST['fiscalesdocu']:'';
+if($array != ''){
+$loopcuenta = count($array) - 1;$loopcuenta2 = count($array) - 2;
+$or1='';
+for($rrr=0;$rrr<=$loopcuenta;$rrr++){
+	if($rrr<=$loopcuenta2){$or1 = ' or ';}else{$or1 = '';}
+	$query1 .= ' id= '.$array[$rrr].$or1;
+}
+$query2 = str_replace('[object Object]','',$query1);
+$query2 = "and (".$query2.") ";
+}else{
+	echo "SELECCIONA UNA CASILLA DEL LISTADO DE ABAJO."; exit;
+}                                                                   
+/*nuevo variables_informacionfiscal_logo*/                           
+
+
+
+$MANDA_INFORMACION = $SUBEFACTURA->MANDA_INFORMACION('DOCUMENTO_LEGAL,ADJUNTAR_DOCUMENTO_LEGAL,ADJUNTAR_DOCUMENTO_OBSERVACIONES',
+
+'NOMBRE DEL DOCUMENTO , DOCUMENTO, OBSERVACIONES', '02DOCUMENTOSFISCALES',  " where idRelacion = '".$_SESSION['idPROV']."' 
+".$query2/*nuevo*/ );
+
+$variables = 'ADJUNTAR_DOCUMENTO_LEGAL, ';
+// trim($variables, ',');
+
+ $cadenacompleta =substr($variables, 0, -2);
+ 
+$adjuntos = $SUBEFACTURA->ADJUNTA_IMAGENES_EMAIL($cadenacompleta,'02DOCUMENTOSFISCALES', " where idRelacion = '".$_SESSION['idPROV']."' ".$query2 );
+
+$html = $SUBEFACTURA->html2('DOCUMENTOS FISCALES DEL PROVEEDOR',$MANDA_INFORMACION );
+//$logo = 'ADJUNTAR_LOGO_INFORMACION_2023_05_31_07_45_49.jpg';
+$idlogo = $SUBEFACTURA->variable_comborelacion1a();
+$logo = $SUBEFACTURA->variables_informacionfiscal_logo($idlogo);
+$embebida = array('../includes/archivos/'.$logo => 'ver');
+echo $conexion2->email($EMAILnombre, $html, $adjuntos, $embebida, $Subject);
+}
+
+elseif($borradocufiscal == 'borradocufiscal'){
+	$borra_id_FISCAL = isset($_POST["borra_id_FISCAL"])?$_POST["borra_id_FISCAL"]:"";
+		
+	echo $SUBEFACTURA->borradocufiscal($borra_id_FISCAL);
+   	//include_once (__ROOT1__."/includes/crea_funciones.php");
+} 
+
+
+
+
+
+
+
+//enviarnuevo_FISCAL/////////////////////////////////////////////////////////////////////////////////////////
+if($DOCUMENTO_FISCAL =='DOCUMENTO_FISCAL' or $enviarnuevo_FISCAL == 'enviarnuevo_FISCAL'){
+$nuevo_documento = isset($_POST["nuevo_documento"])?$_POST["nuevo_documento"]:"";
+$DOCUMENTO_FISCAL = isset($_POST["DOCUMENTO_FISCAL"])?$_POST["DOCUMENTO_FISCAL"]:""; 
+$IPnuevodocumento = isset($_POST["IPnuevodocumento"])?$_POST["IPnuevodocumento"]:"";
+
+echo $SUBEFACTURA->nuevodocumento($nuevo_documento , $DOCUMENTO_FISCAL,$enviarnuevo_FISCAL,$IPnuevodocumento);
+}
+
+elseif($BORRARNUEVOFISCAL == 'BORRARNUEVOFISCAL'){
+	$borra_id_NUEVOD = isset($_POST["borra_id_NUEVOD"])?$_POST["borra_id_NUEVOD"]:"";
+		
+	echo $SUBEFACTURA->BORRARNUEVOFISCAL($borra_id_NUEVOD);
+   	//include_once (__ROOT1__."/includes/crea_funciones.php");
+
+
+}
+ 
+ 
+ 
+ 
  
 
- 
- 
 if($hiddensubefactura =='hiddensubefactura' or $ENVIARRSB1p=='ENVIARRSB1p'){
 
 $NUMERO_CONSECUTIVO_PROVEE = isset($_POST["NUMERO_CONSECUTIVO_PROVEE"])?$_POST["NUMERO_CONSECUTIVO_PROVEE"]:"";
@@ -82,7 +188,7 @@ $TImpuestosRetenidosIVA = isset($_POST["TImpuestosRetenidosIVA"])?$_POST["TImpue
 $TImpuestosRetenidosISR = isset($_POST["TImpuestosRetenidosISR"])?$_POST["TImpuestosRetenidosISR"]:"";
 $descuentos = isset($_POST["descuentos"])?$_POST["descuentos"]:"";
 
-if($NOMBRE_COMERCIAL == "" or  $NUMERO_EVENTO == "" ){
+if($NOMBRE_COMERCIAL == "" or  $NUMERO_EVENTO == "" or  $NUMERO_EVENTO == "" ){
 	echo "<P style='color:red; font-size:23px;'>FAVOR DE LLENAR TODOS LOS CAMPOS OBLIGATORIOS</p>";
 }else{
 
@@ -124,7 +230,7 @@ $hNOTAS = isset($_POST["hNOTAS"])?$_POST["hNOTAS"]:"";
 
 
 
-echo $proveedoresC->NOTAS($DOCUMENTO_NOTAS,$ADJUNTO_NOTAS1,$OBSERVACIONES_NOTAS,$FECHA_NOTAS,$hNOTAS,$IpNOTAS,$enviarNOTAS);
+echo $SUBEFACTURA->NOTAS($DOCUMENTO_NOTAS,$ADJUNTO_NOTAS1,$OBSERVACIONES_NOTAS,$FECHA_NOTAS,$hNOTAS,$IpNOTAS,$enviarNOTAS);
 
 
 

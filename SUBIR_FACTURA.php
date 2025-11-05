@@ -176,8 +176,8 @@ document.addEventListener("DOMContentLoaded", calcular);
 <div id="content">     
 			<hr/>
 	<strong> <P class="mb-0 text-uppercase">
-<img src="includes/contraer31.png" id="mostrar1" style="cursor:pointer;"/>
-<img src="includes/contraer41.png" id="ocultar1" style="cursor:pointer;"/>&nbsp;&nbsp;&nbsp;SUBE TU FACTURA</p></strong></div>
+<img src="includes/contraer31.png" id="mostrar101" style="cursor:pointer;"/>
+<img src="includes/contraer41.png" id="ocultar101" style="cursor:pointer;"/>&nbsp;&nbsp;&nbsp;SUBE TU FACTURA</p></strong></div>
 
 
 <div  id="mensajeSUBIRFACTURA2">
@@ -185,7 +185,7 @@ document.addEventListener("DOMContentLoaded", calcular);
 									<div class="progress-bar" role="progressbar" style="width: <?php echo $contactosventasproveedoresporcentaje ; ?>%;" aria-valuenow="25" aria-valuemin="0" aria-valuemax="100"><?php echo $contactosventasproveedoresporcentaje ; ?>%</div></div></div>
 
 
-	        <div id="target1" style="display:block;"  class="content2">
+	        <div id="target101" style="display:block;"  class="content2">
         <div class="card">
           <div class="card-body">
 
@@ -337,7 +337,7 @@ while($rowsube=mysqli_fetch_array($listadosube)){
                  </tr>
 				 
                  <tr  style="background:#fcf3cf"> 
-                 <th scope="row"> <label for="validationCustom03" class="form-label">NÚMERO CONSECUTIVO DE PAGO A PROVEEDORES</label></th>
+                 <th scope="row"> <label for="validationCustom03" class="form-label">NÚMERO DE SOLICITUD</label></th>
                  <td>
 				 <div id="NUMERO_CONSECUTIVO_PROVEE2">
 				 <input type="text" class="form-control" id="NUMERO_CONSECUTIVO_PROVEE" required=""  value="<?php echo $NUMERO_CONSECUTIVO_PROVEE; ?>" name="NUMERO_CONSECUTIVO_PROVEE" placeholder="NÚMERO CONSECUTIVO DE PAGO A PROVEEDORES">
@@ -388,7 +388,7 @@ while($rowsube=mysqli_fetch_array($listadosube)){
                  </tr>
                  <tr style="background: #d2faf1">  
 
-                 <th scope="row"> <label for="validationCustom03" class="form-label">MONTO TOTAL DE LA COTIZACIÓN O DEL ADEUDO:</label></th>
+                 <th scope="row"> <label for="validationCustom03" class="form-label">MONTO TOTAL DE LA COTIZACIÓN O DEL ADEUDO<br><a style="color:red;font-size:11px">OBLIGATORIO</a></label></th>
                  <td>    <div class="input-group mb-3"> <span class="input-group-text">$</span> <input type="text" class="form-control" id="validationCustom03" required=""  value="<?php echo $MONTO_TOTAL_COTIZACION_ADEUDO; ?>" name="MONTO_TOTAL_COTIZACION_ADEUDO"  onkeyup="comasainput2('MONTO_TOTAL_COTIZACION_ADEUDO')" placeholder="MONTO TOTAL DE LA COTIZACÓN"></div></td>
                  </tr>
 				 
@@ -606,20 +606,11 @@ while($rowsube=mysqli_fetch_array($listadosube)){
 						 
 						 </td>
                  </tr >
-				 <tr style="background: #d2faf1">
-				 					<th scope="row">
-						<label style="width:300px" for="validationCustom03" class="form-label">FECHA DE PROGRAMACIÓN DEL PAGO:</label>
-					</th>
-					<td>
-						<div id="FECHA_DE_PAGO2">
-							<input type="date" class="form-control" id="FECHA_DE_PAGO2" required="" value="<?php echo $FECHA_DE_PAGO; ?>" name="FECHA_DE_PAGO" placeholder="FECHA DE PAGO" readonly="»readonly»">
-						</div>
-					</td>
-				</tr>
+
 
                  <tr   style="background: #d2faf1"> 
 
-                 <th scope="row"> <label for="validationCustom03" class="form-label">NOMBRE DEL EJECUTIVO QUE SOLICITO O REALIZÓ LA COMPRA:</label></th>
+                 <th scope="row"> <label for="validationCustom03" class="form-label">NOMBRE DEL EJECUTIVO QUE SOLICITO O REALIZÓ LA COMPRA:<br><a style="color:red;font-size:11px">OBLIGATORIO</a></label></th>
                  <td><input type="text" class="form-control" id="validationCustom03" required=""  value="<?php echo $NOMBRE_DEL_EJECUTIVO; ?>" name="NOMBRE_DEL_EJECUTIVO"placeholder="NOMBRE DEL EJECUTIVO"></td>
                  </tr>
 				 <tr style="background: #d2faf1">
@@ -666,6 +657,8 @@ while($rowsube=mysqli_fetch_array($listadosube)){
          
          <input type="hidden" style="width:200px;"  class="form-control" id="validationCustom03"   value="<?php echo date('d-m-Y'); ?>" name="FECHA_DE_LLENADO">
          <input type="hidden" name="hiddensubefactura" value="hiddensubefactura">
+		 
+         <input type="hidden" name="FECHA_DE_PAGO" value="<?php echo $FECHA_DE_PAGO; ?>">
               
          	
  

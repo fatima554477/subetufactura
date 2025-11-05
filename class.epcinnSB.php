@@ -499,7 +499,79 @@ mysqli_query($conn,$variablequery);
 	}
 
 
+		
+		
 	
+		//*documentos legales del proveedor/////////////////////////////////////////////////////////////*
+	
+
+	public function variable_documentosfiscales(){
+		$conn = $this->db();
+		$variablequery = "select * from 02DOCUMENTOSFISCALES where idRelacion = '".$_SESSION['idPROV']."' ";
+		$arrayquery = mysqli_query($conn,$variablequery);
+		return $row = mysqli_fetch_array($arrayquery, MYSQLI_ASSOC);		
+	}
+
+	public function revisar_documentosfiscales(){
+		$conn = $this->db();
+		$var1 = 'select id from 02DOCUMENTOSFISCALES where idRelacion =  "'.$_SESSION['idPROV'].'" ';
+		$query = mysqli_query($conn,$var1) or die('P44'.mysqli_error($conn));
+		$row = mysqli_fetch_array($query, MYSQLI_ASSOC);
+		return $row['id'];
+	}
+
+
+	public function documentofiscal ($DOCUMENTO_LEGAL ,$ADJUNTAR_DOCUMENTO_LEGAL, $ADJUNTAR_DOCUMENTO_OBSERVACIONES , $FECHA_ULTIMA_DOCUMEN , $validaDOCUMENTOSFISCAL,$IPdocumentosfiscales,$ENVIAFISCAL){
+		$conn = $this->db();
+		$existe = $this->revisar_documentosfiscales();
+		$session = isset($_SESSION['idPROV'])?$_SESSION['idPROV']:'';
+		if($session != ''){
+			////ENVIAFISCAL
+		$var1 = "update 02DOCUMENTOSFISCALES set  
+		DOCUMENTO_LEGAL = '".$DOCUMENTO_LEGAL."' ,
+		ADJUNTAR_DOCUMENTO_OBSERVACIONES = '".$ADJUNTAR_DOCUMENTO_OBSERVACIONES."' ,
+		FECHA_ULTIMA_DOCUMEN = '".$FECHA_ULTIMA_DOCUMEN."' where id = '".$IPdocumentosfiscales."' ; ";
+	
+		$var2 = "insert into 02DOCUMENTOSFISCALES  (DOCUMENTO_LEGAL,ADJUNTAR_DOCUMENTO_LEGAL, ADJUNTAR_DOCUMENTO_OBSERVACIONES, FECHA_ULTIMA_DOCUMEN, idRelacion) values ( '".$DOCUMENTO_LEGAL."' , '".$ADJUNTAR_DOCUMENTO_LEGAL."' , '".$ADJUNTAR_DOCUMENTO_OBSERVACIONES."' , '".$FECHA_ULTIMA_DOCUMEN."' , '".$session."');  ";	
+			
+		if($ENVIAFISCAL=='ENVIAFISCAL'){	
+
+		mysqli_query($conn,$var1) or die('P156'.mysqli_error($conn));
+		return "Actualizado";
+		}else{
+		mysqli_query($conn,$var2) or die('P160'.mysqli_error($conn));
+		return "Ingresado";
+		}
+			
+        }else{
+		echo '<p class="fs-4">NO HAY UN PROVEEDOR SELECCIONADO</p>'; 
+		}
+    }
+
+	public function listadoDOCUMENTOSFISCALES(){
+		$conn = $this->db();
+
+		$variablequery = "select * from 02DOCUMENTOSFISCALES where idRelacion =  '".$_SESSION['idPROV']."'  order by id desc ";
+		return $arrayquery = mysqli_query($conn,$variablequery);
+	}
+
+
+	public function listadoDOCUMENTOSFISCALES2($id){
+		$conn = $this->db();
+		$variablequery = "select * from 02DOCUMENTOSFISCALES  where id = '".$id."' ";
+		return $arrayquery = mysqli_query($conn,$variablequery);
+	}
+
+
+
+	public function borradocufiscal($id){
+		$conn = $this->db();
+		$variablequery = "delete from 02DOCUMENTOSFISCALES where id = '".$id."' ";
+		$arrayquery = mysqli_query($conn,$variablequery);
+		RETURN 
+		
+		"<P style='color:green; font-size:25px;'>ELEMENTO BORRADO</P>";
+	}	
 	
 	
 		public function listado_empresas1a(){
@@ -508,12 +580,90 @@ mysqli_query($conn,$variablequery);
 		return $arrayquery = mysqli_query($conn,$variablequery); 
 		} 
 	
-	public function descargar_documentos($NUMERO_EMPRESA){
-					$conn = $this->db(); 
-		$query = "SELECT * FROM `03docs_info_fiscal` WHERE idRelacion = '".$NUMERO_EMPRESA."'; ";
-		$query1 = mysqli_query($conn,$query);
-		return $row = mysqli_fetch_array($query1);			
+        public function descargar_documentos($NUMERO_EMPRESA, $documento_legal){
+                                        $conn = $this->db();
+                $query = "SELECT * FROM `03DOCUMENTOSFISCALES` WHERE idRelacion = '".$NUMERO_EMPRESA."' AND DOCUMENTO_LEGAL = '".$documento_legal."' ORDER BY FECHA_ULTIMA_DOCUMEN DESC LIMIT 1;";
+                $query1 = mysqli_query($conn,$query);
+                return $row = mysqli_fetch_array($query1);
+                }
+				
+				
+				
+				
+				//*NUEVO DOCUMENTO//*
+
+	public function variable_nuevodocumentotodos(){
+		$conn = $this->db();
+		$variablequery = "select * from 02NUEVODOCUMENTO order by id desc";
+		return $arrayquery = mysqli_query($conn,$variablequery);
+		// $row = mysqli_fetch_array($arrayquery, MYSQLI_ASSOC);		
+	}
+	
+
+	public function variable_nuevodocumento(){
+		$conn = $this->db();
+		$variablequery = "select * from 02NUEVODOCUMENTO where idRelacion = '".$_SESSION['idPROV']."' ";
+		$arrayquery = mysqli_query($conn,$variablequery);
+		return $row = mysqli_fetch_array($arrayquery, MYSQLI_ASSOC);		
+	}
+
+	public function revisar_nuevodocumento(){
+		$conn = $this->db();
+		$var1 = 'select id from 02NUEVODOCUMENTO where idRelacion =  "'.$_SESSION['idPROV'].'" ';
+		$query = mysqli_query($conn,$var1) or die('P44'.mysqli_error($conn));
+		$row = mysqli_fetch_array($query, MYSQLI_ASSOC);
+		return $row['id'];
+	}
+
+	public function nuevodocumento ($nuevo_documento , $DOCUMENTO_FISCAL,$enviarnuevo_FISCAL,$IPnuevodocumento){
+		$conn = $this->db();
+		$existe = $this->revisar_nuevodocumento();
+		$session = isset($_SESSION['idPROV'])?$_SESSION['idPROV']:'';
+		if($session != ''){
+			
+		$var1 = "update 02NUEVODOCUMENTO set  nuevo_documento = '".$nuevo_documento."' , DOCUMENTO_FISCAL = '".$DOCUMENTO_FISCAL."' where id = '".$IPnuevodocumento."' ; ";
+	
+		$var2 = "insert into 02NUEVODOCUMENTO  (nuevo_documento, DOCUMENTO_FISCAL, idRelacion) values ( '".$nuevo_documento."' , '".$DOCUMENTO_FISCAL."' , '".$session."');  ";	
+			
+		if($enviarnuevo_FISCAL=='enviarnuevo_FISCAL'){	
+
+		mysqli_query($conn,$var1) or die('P156'.mysqli_error($conn));
+		return "Actualizado";
+		}else{
+		mysqli_query($conn,$var2) or die('P160'.mysqli_error($conn));
+		return "Ingresado";
 		}
+			
+        }else{
+		echo '<p class="fs-4">NO HAY UN PROVEEDOR SELECCIONADO</p>'; 
+		}
+    }
+
+	public function listadoNUEVODOCUMENTO(){
+		$conn = $this->db();
+
+		$variablequery = "select * from 02NUEVODOCUMENTO order by id desc ";
+		return $arrayquery = mysqli_query($conn,$variablequery);
+	}
+
+
+	public function listadoNUEVODOCUMENTO2($id){
+		$conn = $this->db();
+		$variablequery = "select * from 02NUEVODOCUMENTO  where id = '".$id."' ";
+		return $arrayquery = mysqli_query($conn,$variablequery);
+	}
+
+
+
+	public function BORRARNUEVOFISCAL($id){
+		$conn = $this->db();
+		$variablequery = "delete from 02NUEVODOCUMENTO where id = '".$id."' ";
+		$arrayquery = mysqli_query($conn,$variablequery);
+		RETURN 
+		
+		"<P style='color:green; font-size:25px;'>ELEMENTO BORRADO</P>";
+	}	
+	
 
 	
 
