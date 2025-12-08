@@ -188,7 +188,7 @@ $TImpuestosRetenidosIVA = isset($_POST["TImpuestosRetenidosIVA"])?$_POST["TImpue
 $TImpuestosRetenidosISR = isset($_POST["TImpuestosRetenidosISR"])?$_POST["TImpuestosRetenidosISR"]:"";
 $descuentos = isset($_POST["descuentos"])?$_POST["descuentos"]:"";
 
-if($NOMBRE_COMERCIAL == "" or  $NUMERO_EVENTO == "" or  $NUMERO_EVENTO == "" ){
+if($NOMBRE_COMERCIAL == "" or  $NUMERO_EVENTO == "" or  $NOMBRE_DEL_EJECUTIVO == "" or  $MONTO_TOTAL_COTIZACION_ADEUDO == ""){
 	echo "<P style='color:red; font-size:23px;'>FAVOR DE LLENAR TODOS LOS CAMPOS OBLIGATORIOS</p>";
 }else{
 

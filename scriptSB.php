@@ -128,6 +128,7 @@ $('#1'+nombre).html('<a target="_blank" href="includes/archivos/'+$.trim(respons
 /*nuevo inicio*/
 $("#2ADJUNTAR_FACTURA_XML").load(location.href + " #2ADJUNTAR_FACTURA_XML");
 if(nombre == 'ADJUNTAR_FACTURA_XML'){
+$('#NUMERO_EVENTO2').load(location.href + ' #NUMERO_EVENTO2');
 $('#RAZON_SOCIAL2').load(location.href + ' #RAZON_SOCIAL2');
 $('#RFC_PROVEEDOR2').load(location.href + ' #RFC_PROVEEDOR2');
 $('#CONCEPTO_PROVEE2').load(location.href + ' #CONCEPTO_PROVEE2');
@@ -367,6 +368,7 @@ $.ajax({
 			$('#TImpuestosRetenidosISR').load(location.href + ' #TImpuestosRetenidosISR');
 			$('#2descuentos').load(location.href + ' #2descuentos');
 			$('#descuentos').load(location.href + ' #descuentos');
+			$('#NUMERO_EVENTO2').load(location.href + ' #NUMERO_EVENTO2');
 			
 			
 			$("#mensajeSUBIRFACTURA").html("<span id='ACTUALIZADO' >"+data+"</span>").fadeIn().delay(3000).fadeOut();
