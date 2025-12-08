@@ -27,7 +27,7 @@ if($action == "ajax"){
 	$DEPARTAMENTO = !EMPTY($_POST["DEPARTAMENTO2"])?$_POST["DEPARTAMENTO2"]:"DEFAULT";	
 	$nombreTabla = "SELECT * FROM `08ventasoperacionesfiltroDes`, 08altaeventosfiltroPLA WHERE 08ventasoperacionesfiltroDes.id = 08altaeventosfiltroPLA.idRelacion";
 	$altaeventos = "ventasoperaciones";
-	$tables="02SUBETUFACTURA";
+
 	
 
 $NUMERO_CONSECUTIVO_PROVEE = isset($_POST["NUMERO_CONSECUTIVO_PROVEE"])?$_POST["NUMERO_CONSECUTIVO_PROVEE"]:""; 
@@ -262,14 +262,14 @@ $per_page=intval($_POST["per_page"]);
 		<thead>
             <tr>
 <th style="background:#c9e8e8"></th>
-<th style="background:#c9e8e8">#</th>
+
 
 <?php 
 if($database->plantilla_filtro($nombreTabla,"ADJUNTAR_FACTURA_XML",$altaeventos,$DEPARTAMENTO)=="si"){ ?><th style="background:#c9e8e8;text-align:center">FACTURA XML</th>
 <?php } ?><?php 
 if($database->plantilla_filtro($nombreTabla,"ADJUNTAR_FACTURA_PDF",$altaeventos,$DEPARTAMENTO)=="si"){ ?><th style="background:#c9e8e8;text-align:center">FACTURA PDF</th>
 <?php } ?><?php 
-if($database->plantilla_filtro($nombreTabla,"NUMERO_CONSECUTIVO_PROVEE",$altaeventos,$DEPARTAMENTO)=="si"){ ?><th style="background:#c9e8e8;text-align:center">NÚMERO CONSECUTIVO PROVEE</th>
+if($database->plantilla_filtro($nombreTabla,"NUMERO_CONSECUTIVO_PROVEE",$altaeventos,$DEPARTAMENTO)=="si"){ ?><th style="background:#c9e8e8;text-align:center">NÚMERO DE SOLICITUD</th>
 <?php } ?>
 
 
@@ -337,16 +337,18 @@ if($database->plantilla_filtro($nombreTabla,"TIPO_DE_MONEDA",$altaeventos,$DEPAR
 if($database->plantilla_filtro($nombreTabla,"PFORMADE_PAGO",$altaeventos,$DEPARTAMENTO)=="si"){ ?><th style="background:#c9e8e8;text-align:center">FORMA DE PAGO</th>
 <?php } ?>
 
-
+<?php 
+if($database->plantilla_filtro($nombreTabla,"FECHA_DE_PAGO",$altaeventos,$DEPARTAMENTO)=="si"){ ?><th style="background:#c9e8e8;text-align:center">FECHA DE PROGRAMACIÓN  DEL PAGO</th>
+<?php } ?>
 
 <?php 
-if($database->plantilla_filtro($nombreTabla,"FECHA_A_DEPOSITAR",$altaeventos,$DEPARTAMENTO)=="si"){ ?><th style="background:#c9e8e8;text-align:center">FECHA EFECTIVA DE PAGO</th>
+if($database->plantilla_filtro($nombreTabla,"FECHA_A_DEPOSITAR",$altaeventos,$DEPARTAMENTO)=="si"){ ?><th style="background:#f48a81;text-align:center">FECHA EFECTIVA DE PAGO</th>
 <?php } ?><?php 
-if($database->plantilla_filtro($nombreTabla,"STATUS_DE_PAGO",$altaeventos,$DEPARTAMENTO)=="si"){ ?><th style="background:#c9e8e8;text-align:center">STATUS DE PAGO</th>
+if($database->plantilla_filtro($nombreTabla,"STATUS_DE_PAGO",$altaeventos,$DEPARTAMENTO)=="si"){ ?><th style="background:#f48a81;text-align:center">STATUS DE PAGO</th>
 <?php } ?><?php                                     
 if($database->plantilla_filtro($nombreTabla,"ADJUNTAR_COTIZACION",$altaeventos,$DEPARTAMENTO)=="si"){ ?><th style="background:#c9e8e8;text-align:center"> COTIZACIÓN O REPORTE</th>
 <?php } ?><?php                                     
-if($database->plantilla_filtro($nombreTabla,"CONPROBANTE_TRANSFERENCIA",$altaeventos,$DEPARTAMENTO)=="si"){ ?><th style="background:#c9e8e8"> COMPROBANTE DE TRANSFERENCIA</th>
+if($database->plantilla_filtro($nombreTabla,"CONPROBANTE_TRANSFERENCIA",$altaeventos,$DEPARTAMENTO)=="si"){ ?><th style="background:#f48a81"> COMPROBANTE DE TRANSFERENCIA</th>
 <?php } ?>
 
 
@@ -504,7 +506,7 @@ if($database->plantilla_filtro($nombreTabla,"total",$altaeventos,$DEPARTAMENTO)=
             </tr>
             <tr>
 <td style="background:#c9e8e8"></td>
-<td style="background:#c9e8e8"></td>
+
 
 
 
@@ -594,9 +596,28 @@ echo $descuentos; ?>"></td>
 <?php  
 if($database->plantilla_filtro($nombreTabla,"MONTO_DEPOSITAR",$altaeventos,$DEPARTAMENTO)=="si"){ ?><td style="background:#c9e8e8"><input type="text" class="form-control" id="MONTO_DEPOSITAR_1" value="<?php 
 echo $MONTO_DEPOSITAR; ?>"></td>
-<?php } ?><?php  
-if($database->plantilla_filtro($nombreTabla,"TIPO_DE_MONEDA",$altaeventos,$DEPARTAMENTO)=="si"){ ?><td style="background:#c9e8e8"><input type="text" class="form-control" id="TIPO_DE_MONEDA_1" value="<?php 
-echo $TIPO_DE_MONEDA; ?>"></td>
+<?php } ?>
+
+<?php  
+if($database->plantilla_filtro($nombreTabla,"TIPO_DE_MONEDA",$altaeventos,$DEPARTAMENTO)=="si"){ ?>
+    <td style="background:#c9e8e8">
+        <select class="form-select mb-3" aria-label="Default select example" id="TIPO_DE_MONEDA_1" name="TIPO_DE_MONEDA" onchange="load(1);">
+            <option value="">TODOS</option>
+            <option style="background: #c9e8e8" value="MXN" <?php if($TIPO_DE_MONEDA=='MXN'){echo "selected";} ?>>MXN (Peso mexicano)</option>
+            <option style="background: #a3e4d7" value="USD" <?php if($TIPO_DE_MONEDA=='USD'){echo "selected";} ?>>USD (Dólar estadounidense)</option>
+            <option style="background: #e8f6f3" value="EUR" <?php if($TIPO_DE_MONEDA=='EUR'){echo "selected";} ?>>EUR (Euro)</option>
+            <option style="background: #fdf2e9" value="GBP" <?php if($TIPO_DE_MONEDA=='GBP'){echo "selected";} ?>>GBP (Libra esterlina)</option>
+            <option style="background: #eaeded" value="CHF" <?php if($TIPO_DE_MONEDA=='CHF'){echo "selected";} ?>>CHF (Franco suizo)</option>
+            <option style="background: #fdebd0" value="CNY" <?php if($TIPO_DE_MONEDA=='CNY'){echo "selected";} ?>>CNY (Yuan chino)</option>
+            <option style="background: #ebdef0" value="JPY" <?php if($TIPO_DE_MONEDA=='JPY'){echo "selected";} ?>>JPY (Yen japonés)</option>
+            <option style="background: #d6eaf8" value="HKD" <?php if($TIPO_DE_MONEDA=='HKD'){echo "selected";} ?>>HKD (Dólar hongkonés)</option>
+            <option style="background: #fef5e7" value="CAD" <?php if($TIPO_DE_MONEDA=='CAD'){echo "selected";} ?>>CAD (Dólar canadiense)</option>
+            <option style="background: #ebedef" value="AUD" <?php if($TIPO_DE_MONEDA=='AUD'){echo "selected";} ?>>AUD (Dólar australiano)</option>
+            <option style="background: #fbeee6" value="BRL" <?php if($TIPO_DE_MONEDA=='BRL'){echo "selected";} ?>>BRL (Real brasileño)</option>
+            <option style="background: #e8f6f3" value="RUB" <?php if($TIPO_DE_MONEDA=='RUB'){echo "selected";} ?>>RUB (Rublo ruso)</option>
+			<option value="SELECCIONA UNA OPCION" <?php if($_POST['TIPO_DE_MONEDA']=='SELECCIONA UNA OPCION'){echo 'selected';} ?>>SELECCIONA UNA OPCION</option>								
+			</select>
+</td>
 <?php } ?>
 
 
@@ -611,21 +632,52 @@ echo $PFORMADE_PAGO; ?>"></td>
 
 
 
+<?php  
+if($database->plantilla_filtro($nombreTabla,"FECHA_DE_PAGO",$altaeventos,$DEPARTAMENTO)=="si"){ ?><td style="background:#c9e8e8;text-align:center">
+<table>
+<tr>
+<td><strong>INICIA&nbsp;</strong></td>
+<td><input type="date" class="form-control" id="FECHA_DE_PAGO" value="<?php 
+echo $FECHA_DE_PAGO; ?>"></td>
+
+<td><strong>TERMINA&nbsp;</strong></td>
+<td><input type="date" class="form-control" id="FECHA_DE_PAGO2a" value="<?php 
+echo $FECHA_DE_PAGO2a; ?>"></td>
+</tr>
+</table>
+</td>
+<?php } ?>
+
+
 
 
 <?php  
-if($database->plantilla_filtro($nombreTabla,"FECHA_A_DEPOSITAR",$altaeventos,$DEPARTAMENTO)=="si"){ ?><td style="background:#c9e8e8"><input type="date" class="form-control" id="FECHA_A_DEPOSITAR_1" value="<?php 
+if($database->plantilla_filtro($nombreTabla,"FECHA_A_DEPOSITAR",$altaeventos,$DEPARTAMENTO)=="si"){ ?><td style="background:#f48a81"><input type="date" class="form-control" id="FECHA_A_DEPOSITAR_1" value="<?php 
 echo $FECHA_A_DEPOSITAR; ?>"></td>
-<?php } ?><?php  
-if($database->plantilla_filtro($nombreTabla,"STATUS_DE_PAGO",$altaeventos,$DEPARTAMENTO)=="si"){ ?><td style="background:#c9e8e8"><input type="text" class="form-control" id="STATUS_DE_PAGO_1" value="<?php 
-echo $STATUS_DE_PAGO; ?>"></td>
+<?php } ?>
+
+
+
+<?php  
+if($database->plantilla_filtro($nombreTabla,"STATUS_DE_PAGO",$altaeventos,$DEPARTAMENTO)=="si"){ ?>
+             </br><td style="background:#f48a81">
+				
+			<select class="form-select mb-3" aria-label="Default select example" id="STATUS_DE_PAGO_1" onchange="load(1);">
+			<option value="">TODOS</option>
+			<option value="SOLICITADO" <?php if($_POST['STATUS_DE_PAGO']=='SOLICITADO'){echo 'selected';} ?>>SOLICITADO</option>
+			<option value="APROBADO" <?php if($_POST['STATUS_DE_PAGO']=='APROBADO'){echo 'selected';} ?>>APROBADO</option>
+			<option value="PAGADO" <?php if($_POST['STATUS_DE_PAGO']=='PAGADO'){echo 'selected';} ?>>PAGADO</option>
+			<option value="RECHAZADO" <?php if($_POST['STATUS_DE_PAGO']=='RECHAZADO'){echo 'selected';} ?>>RECHAZADO</option>
+			<option value="SELECCIONA UNA OPCION" <?php if($_POST['STATUS_DE_PAGO']=='SELECCIONA UNA OPCION'){echo 'selected';} ?>>SELECCIONA UNA OPCION</option>								
+			</select>
+</td>
 <?php } ?>
 <?php  
 if($database->plantilla_filtro($nombreTabla,"ADJUNTAR_COTIZACION",$altaeventos,$DEPARTAMENTO)=="si"){ ?><td style="background:#c9e8e8;text-align:center"><input type="text" class="form-control" id="ADJUNTAR_COTIZACION" value="<?php
 echo $ADJUNTAR_COTIZACION; ?>"></td>
 <?php } ?>
 <?php  
-if($database->plantilla_filtro($nombreTabla,"CONPROBANTE_TRANSFERENCIA",$altaeventos,$DEPARTAMENTO)=="si"){ ?><td style="background:#c9e8e8;text-align:center"><input type="text" class="form-control" id="CONPROBANTE_TRANSFERENCIA" value="<?php
+if($database->plantilla_filtro($nombreTabla,"CONPROBANTE_TRANSFERENCIA",$altaeventos,$DEPARTAMENTO)=="si"){ ?><td style="background:#f48a81;text-align:center"><input type="text" class="form-control" id="CONPROBANTE_TRANSFERENCIA" value="<?php
 echo $CONPROBANTE_TRANSFERENCIA; ?>"></td>
 <?php } ?>
 
@@ -835,8 +887,6 @@ if($database->plantilla_filtro($nombreTabla,"total",$altaeventos,$DEPARTAMENTO)=
 <?php /*termina copiar y terminaA4*/ ?>
 	
 
-		<td style="background:#c9e8e8"></td>
-		<td style="background:#c9e8e8"></td>
 	
             </tr>			
         </thead>
@@ -855,8 +905,8 @@ foreach ($datos as $key=>$row){
 
     // Nueva condición para PFORMADE_PAGO
 if (isset($row['STATUS_DE_PAGO']) && $row['STATUS_DE_PAGO'] == 'RECHAZADO') {
-    $fondo_existe_xml = "style='background-color: #ff0000'"; // Rojo sólido
-    $fondo_existe_xml2 = "style='background-color: #ff0000'";
+$fondo_existe_xml = "style='background:#FEEBE7;color:#ff0000;font-weight:bold;'";
+$fondo_existe_xml2 = "style='background:#FEEBE7;color:#ff0000;font-weight:bold;'";
 } 
 // 2. Segunda prioridad: Forma de pago diferente de '03' (ROSADO)
 else if ($row['PFORMADE_PAGO'] != '03') {
@@ -896,9 +946,7 @@ else {
                    localStorage.removeItem('checkbox_' + id);
                }">
 </td>
-    <td <?php echo $fondo_existe_xml; ?>>
-        <?php echo $row['02SUBETUFACTURAid']; $colspan += 1; ?>
-    </td>
+   
 
 <?php
                                                                
@@ -1079,10 +1127,15 @@ $MONTO_DEPOSITAR12 += $row['MONTO_DEPOSITAR']; $colspan2 += 1;
 <?php } ?>
 
 
-
+<?php  if($database->plantilla_filtro($nombreTabla,"FECHA_DE_PAGO",$altaeventos,$DEPARTAMENTO)=="si"){ ?><td style="text-align:center"><?php echo $row['FECHA_DE_PAGO'];
+ $colspan2 += 1;
+ ?></td>
+<?php } ?>
 
 <?php  if($database->plantilla_filtro($nombreTabla,"FECHA_A_DEPOSITAR",$altaeventos,$DEPARTAMENTO)=="si"){ ?><td style="text-align:center"><?php echo $row['FECHA_A_DEPOSITAR']; $colspan2 += 1;?></td>
 <?php } ?>
+
+
 <?php  if($database->plantilla_filtro($nombreTabla,"STATUS_DE_PAGO",$altaeventos,$DEPARTAMENTO)=="si"){ ?><td style="text-align:center"><?php echo $row['STATUS_DE_PAGO']; $colspan2 += 1;?></td>
 <?php } ?>
 <?php  if($database->plantilla_filtro($nombreTabla,"ADJUNTAR_COTIZACION",$altaeventos,$DEPARTAMENTO)=="si"){ ?><td style="text-align:center"><?php echo $ADJUNTAR_COTIZACION;  $colspan2 += 1;?></td>
@@ -1311,7 +1364,22 @@ $totales2 = 'si';
 
 
 
-
+<td>
+    <input type="checkbox" 
+           class="checkbox"
+           data-id="<?php echo $row['02SUBETUFACTURAid']; ?>" 
+           style="transform: scale(1.1); cursor: pointer;" 
+           onchange="
+               const fila = this.closest('tr');
+               const id = this.getAttribute('data-id');
+               if (this.checked) {
+                   fila.style.filter = 'brightness(65%) sepia(100%) saturate(500%) hue-rotate(0deg)';
+                   localStorage.setItem('checkbox_' + id, 'checked');
+               } else {
+                   fila.style.filter = 'none';
+                   localStorage.removeItem('checkbox_' + id);
+               }">
+</td>
 
 
 
