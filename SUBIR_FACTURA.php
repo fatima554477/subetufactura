@@ -140,6 +140,50 @@ function calcular() {
 
 // Ejecutamos todo cuando cargue el DOM
 document.addEventListener("DOMContentLoaded", calcular);
+
+
+document.addEventListener("DOMContentLoaded", function () {
+
+    const numeroEventoInput = document.querySelector('input[name="NUMERO_EVENTO"]');
+
+    const nombreReceptorInput = document.querySelector('input[name="DATOS_DE_EPC_INNOVACC_JUST"]');
+
+
+
+    if (!numeroEventoInput || !nombreReceptorInput) {
+
+        return;
+
+    }
+
+
+
+    const prefijosNumeroEvento = {
+
+        "EVENTOS PROMOCIONES Y CONVENCIONES": "EPC",
+
+        "INNOVA CONGRESOS Y CONVENCIONES": "INN",
+
+        "EVENTOS 520": "EVE"
+
+    };
+
+
+
+    const nombreReceptor = nombreReceptorInput.value.trim();
+
+    const prefijo = prefijosNumeroEvento[nombreReceptor];
+
+
+
+    if (prefijo && numeroEventoInput.value.trim() === "") {
+
+        numeroEventoInput.value = prefijo;
+
+    }
+
+});
+
       
       
       $(document).on('change','input[type="checkbox"]' ,function(e) {
@@ -149,6 +193,7 @@ document.addEventListener("DOMContentLoaded", calcular);
           }
         
       });
+	  
       $(document).on('change','input[type="checkbox"]' ,function(e) {
           if(this.id=="MONTO_DEPOSITAR2") {
               if(this.checked) $('#FECHA_AUTORIZACION_AUDITORIA').val(this.value);
@@ -156,6 +201,7 @@ document.addEventListener("DOMContentLoaded", calcular);
           }
         
       });
+	  
       $(document).on('change','input[type="checkbox"]' ,function(e) {
           if(this.id=="MONTO_DEPOSITAR3") {
               if(this.checked) $('#FECHA_DE_LLENADO').val(this.value);
@@ -205,7 +251,7 @@ document.addEventListener("DOMContentLoaded", calcular);
 				
 				 
                  <tr  style="background: #d2faf1" > 
-                 <th scope="row"> <label for="validationCustom03" class="form-label">ADJUNTAR FACTURA(FORMATO XML)</label></th>
+                 <th scope="row"> <label for="validationCustom03" class="form-label">ADJUNTAR FACTURA FORMATO &nbsp;<a style="color:red;font:12px">(XML)</a></label></th>
                  <td>
 				 
 	
@@ -231,10 +277,27 @@ while($rowsube=mysqli_fetch_array($listadosube)){
 	echo "<a target='_blank' href='includes/archivos/".$rowsube['ADJUNTAR_FACTURA_XML']."' id='A".$rowsube['id']."' >Visualizar!</a> "." <span id='".$rowsube['id']."' class='view_dataSBborrar2' style='cursor:pointer;color:blue;'>Borrar!</span> <span > ".$rowsube['fechaingreso']."</span>".'<br/>';		
 	
 }
-	$NUMERO_CONSECUTIVO_PROVEE = '';	$FECHA_DE_PAGO = '';
+	$NUMERO_CONSECUTIVO_PROVEE = '';
+
+	$FECHA_DE_PAGO = '';
+
+	$NUMERO_EVENTO = '';
+
 	$regreso = $SUBEFACTURA->variable_SUBETUFACTURA();
-	$url = __ROOT1__.'/includes/archivos/'.$regreso['ADJUNTAR_FACTURA_XML'];
-if( file_exists($url) ){
+$url = '';
+
+
+
+	if (is_array($regreso) && isset($regreso['ADJUNTAR_FACTURA_XML'])) {
+
+		$NUMERO_EVENTO = isset($regreso['NUMERO_EVENTO']) ? $regreso['NUMERO_EVENTO'] : '';
+
+		$url = __ROOT1__.'/includes/archivos/'.$regreso['ADJUNTAR_FACTURA_XML'];
+
+	}
+
+if( $url && file_exists($url) ){
+
 	$regreso = $conexion2->lectorxml($url);
 	
 	$Version = $regreso['Version'];
@@ -272,7 +335,7 @@ if( file_exists($url) ){
 	$RfcProvCertif = $regreso['RfcProvCertif'];	
 	$TImpuestosRetenidos = $regreso['TImpuestosRetenidos'];
 	$TImpuestosTrasladados = $regreso['TImpuestosTrasladados'];
-
+    $prefijosNumeroEvento = $regreso['NUMERO_EVENTO'];
 	$Cantidad = $regreso['Cantidad'];
 	$ValorUnitario = $regreso['ValorUnitario'];
 	$Importe = $regreso['Importe'];
@@ -296,6 +359,16 @@ if( file_exists($url) ){
 	
 	$NUMERO_CONSECUTIVO_PROVEE = $SUBEFACTURA->select_02XML()+1;
 	
+}
+
+$prefijosNumeroEvento = [
+        'EVENTOS PROMOCIONES Y CONVENCIONES' => 'EPC',
+        'INNOVA CONGRESOS Y CONVENCIONES' => 'INN',
+        'EVENTOS 520' => 'EVE',
+];
+
+if (isset($nombreR) && isset($prefijosNumeroEvento[$nombreR]) && trim((string)$NUMERO_EVENTO) === '') {
+        $NUMERO_EVENTO = $prefijosNumeroEvento[$nombreR];
 }
 
 ?></div>			 
@@ -340,7 +413,7 @@ while($rowsube=mysqli_fetch_array($listadosube)){
                  <th scope="row"> <label for="validationCustom03" class="form-label">NÚMERO DE SOLICITUD</label></th>
                  <td>
 				 <div id="NUMERO_CONSECUTIVO_PROVEE2">
-				 <input type="text" class="form-control" id="NUMERO_CONSECUTIVO_PROVEE" required=""  value="<?php echo $NUMERO_CONSECUTIVO_PROVEE; ?>" name="NUMERO_CONSECUTIVO_PROVEE" placeholder="NÚMERO CONSECUTIVO DE PAGO A PROVEEDORES">
+				 <input type="text" class="form-control" id="NUMERO_CONSECUTIVO_PROVEE" required=""  value="<?php echo $NUMERO_CONSECUTIVO_PROVEE; ?>" name="NUMERO_CONSECUTIVO_PROVEE" placeholder="NÚMERO DE SOLICITUD">
 				 </div>
 				 </td>
                  </tr>
@@ -372,10 +445,16 @@ while($rowsube=mysqli_fetch_array($listadosube)){
 				 <input type="text" class="form-control" id="RFC_PROVEEDOR" required=""  value="<?php echo $P_RFC_MTDP; ?>" name="RFC_PROVEEDOR" placeholder="RFC DEL PROVEEDOR" readonly="readonly">
 				 </div>
 				 </td>
+				 
+				 
+				 
                  </tr>
+				 
+				 
                  <tr style="background: #d2faf1">
-                 <th scope="row"> <label for="validationCustom03" class="form-label">No. DE EVENTO:<br><a style="color:red;font-size:11px">OBLIGATORIO</a></label></th>
-                 <td><input type="text" class="form-control" id="validationCustom03" required=""  value="<?php echo $NUMERO_EVENTO; ?>" name="NUMERO_EVENTO" placeholder="No. DE EVENTO"></td>
+                 <th scope="row"> <label for="validationCustom03" class="form-label">AGREGA EL No. DE EVENTO:<br><a style="color:red;font-size:11px">OBLIGATORIO</a></label></th>
+				  
+                 <td><div id="NUMERO_EVENTO2"><input type="text" class="form-control" id="validationCustom03" required=""  value="<?php echo $NUMERO_EVENTO; ?>" name="NUMERO_EVENTO" placeholder="No. DE EVENTO"></td>
                  </tr>
                 
                  <tr style="background:#fcf3cf"> 
@@ -388,7 +467,7 @@ while($rowsube=mysqli_fetch_array($listadosube)){
                  </tr>
                  <tr style="background: #d2faf1">  
 
-                 <th scope="row"> <label for="validationCustom03" class="form-label">MONTO TOTAL DE LA COTIZACIÓN O DEL ADEUDO<br><a style="color:red;font-size:11px">OBLIGATORIO</a></label></th>
+                 <th scope="row"> <label for="validationCustom03" class="form-label">MONTO TOTAL DE LA COTIZACIÓN O DEL ADEUDO CON IMPUESTOS<br><a style="color:red;font-size:11px">OBLIGATORIO</a></label></th>
                  <td>    <div class="input-group mb-3"> <span class="input-group-text">$</span> <input type="text" class="form-control" id="validationCustom03" required=""  value="<?php echo $MONTO_TOTAL_COTIZACION_ADEUDO; ?>" name="MONTO_TOTAL_COTIZACION_ADEUDO"  onkeyup="comasainput2('MONTO_TOTAL_COTIZACION_ADEUDO')" placeholder="MONTO TOTAL DE LA COTIZACÓN"></div></td>
                  </tr>
 				 
