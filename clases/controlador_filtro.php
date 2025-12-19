@@ -364,7 +364,7 @@ if($database->plantilla_filtro($nombreTabla,"OBSERVACIONES_1",$altaeventos,$DEPA
 <?php } ?><?php 
 if($database->plantilla_filtro($nombreTabla,"ADJUNTAR_ARCHIVO_1",$altaeventos,$DEPARTAMENTO)=="si"){ ?><th style="background:#c9e8e8;text-align:center">ARCHIVO RELACIONADO A ESTE GASTO:</th>
 <?php } ?><?php 
-if($database->plantilla_filtro($nombreTabla,"FECHA_DE_LLENADO",$altaeventos,$DEPARTAMENTO)=="si"){ ?><th style="background:#c9e8e8;text-align:center">FECHA DE LLENADO</th>
+if($database->plantilla_filtro($nombreTabla,"FECHA_DE_LLENADO",$altaeventos,$DEPARTAMENTO)=="si"){ ?><th style="background:#c9e8e8;text-align:center">FECHA Y HORA <br>DE LLENADO</th>
 <?php } ?>
 
 
@@ -1152,8 +1152,25 @@ $MONTO_DEPOSITAR12 += $row['MONTO_DEPOSITAR']; $colspan2 += 1;
 <?php } ?>
 <?php  if($database->plantilla_filtro($nombreTabla,"ADJUNTAR_ARCHIVO_1",$altaeventos,$DEPARTAMENTO)=="si"){ ?><td style="text-align:center"><?php echo $ADJUNTAR_ARCHIVO_1;  $colspan2 += 1;?></td>
 <?php } ?>
-<?php  if($database->plantilla_filtro($nombreTabla,"FECHA_DE_LLENADO",$altaeventos,$DEPARTAMENTO)=="si"){ ?><td style="text-align:center"><?php echo $row['FECHA_DE_LLENADO']; $colspan2 += 1;?></td>
-<?php } ?>
+
+
+<?php  
+if ($database->plantilla_filtro($nombreTabla,"FECHA_DE_LLENADO",$altaeventos,$DEPARTAMENTO)=="si") {
+
+    $fechaHora = $row['FECHA_DE_LLENADO'];
+    $fecha = date('d-m-Y', strtotime($fechaHora));
+    $hora  = date('H:i:s', strtotime($fechaHora));
+?>
+<td style="text-align:center">
+    <?php echo $fecha; ?>
+    <span style="color:#2542C4; font-weight:bold;">
+        <?php echo $hora; ?>
+    </span>
+</td>
+<?php 
+    $colspan2 += 1;
+} 
+?>
 
 
 
