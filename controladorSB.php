@@ -182,14 +182,18 @@ $IMPUESTO_HOSPEDAJE = isset($_POST["IMPUESTO_HOSPEDAJE"])?$_POST["IMPUESTO_HOSPE
 $MONTO_DEPOSITADO = isset($_POST["MONTO_DEPOSITADO"])?$_POST["MONTO_DEPOSITADO"]:"";
 $PENDIENTE_PAGO = isset($_POST["PENDIENTE_PAGO"])?$_POST["PENDIENTE_PAGO"]:"";
 $NOMBRE_DEL_AYUDO = isset($_POST["NOMBRE_DEL_AYUDO"])?$_POST["NOMBRE_DEL_AYUDO"]:"";
-$IPSB1p = isset($_POST["IPSB1p"])?$_POST["IPSB1p"]:""; 
-$IVA = isset($_POST["IVA"])?$_POST["IVA"]:""; 
+$IPSB1p = isset($_POST["IPSB1p"])?$_POST["IPSB1p"]:"";
+$IVA = isset($_POST["IVA"])?$_POST["IVA"]:"";
 $TImpuestosRetenidosIVA = isset($_POST["TImpuestosRetenidosIVA"])?$_POST["TImpuestosRetenidosIVA"]:"";
 $TImpuestosRetenidosISR = isset($_POST["TImpuestosRetenidosISR"])?$_POST["TImpuestosRetenidosISR"]:"";
 $descuentos = isset($_POST["descuentos"])?$_POST["descuentos"]:"";
 
-if($NOMBRE_COMERCIAL == "" or  $NUMERO_EVENTO == "" or  $NOMBRE_DEL_EJECUTIVO == "" or  $MONTO_TOTAL_COTIZACION_ADEUDO == ""){
-	echo "<P style='color:red; font-size:23px;'>FAVOR DE LLENAR TODOS LOS CAMPOS OBLIGATORIOS</p>";
+$prefijosNumeroEvento = array('EPC','INN','EVE');
+
+if(in_array(strtoupper(trim($NUMERO_EVENTO)),$prefijosNumeroEvento)){
+        echo "<P style='color:red; font-size:23px;'>FAVOR DE COMPLETAR EL NÚMERO DE EVENTO AGREGANDO EL NÚMERO CORRESPONDIENTE DESPUÉS DE LAS INICIALES DE LA EMPRESA SIN ESPACIOS.</p>";
+}elseif($NOMBRE_COMERCIAL == "" or  $NUMERO_EVENTO == "" or  $NOMBRE_DEL_EJECUTIVO == "" or  $MONTO_TOTAL_COTIZACION_ADEUDO == ""){
+echo "<P style='color:red; font-size:23px;'>FAVOR DE LLENAR TODOS LOS CAMPOS OBLIGATORIOS</p>";
 }else{
 
 

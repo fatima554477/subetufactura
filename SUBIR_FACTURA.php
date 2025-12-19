@@ -251,7 +251,7 @@ document.addEventListener("DOMContentLoaded", function () {
 				
 				 
                  <tr  style="background: #d2faf1" > 
-                 <th scope="row"> <label for="validationCustom03" class="form-label">ADJUNTAR FACTURA FORMATO &nbsp;<a style="color:red;font:12px">(XML)</a></label></th>
+                 <th scope="row"> <label for="validationCustom03" class="form-label">ADJUNTAR FACTURA(FORMATO &nbsp;<a style="color:red;font:12px">(XML)</a><</label></th>
                  <td>
 				 
 	
@@ -413,7 +413,7 @@ while($rowsube=mysqli_fetch_array($listadosube)){
                  <th scope="row"> <label for="validationCustom03" class="form-label">NÚMERO DE SOLICITUD</label></th>
                  <td>
 				 <div id="NUMERO_CONSECUTIVO_PROVEE2">
-				 <input type="text" class="form-control" id="NUMERO_CONSECUTIVO_PROVEE" required=""  value="<?php echo $NUMERO_CONSECUTIVO_PROVEE; ?>" name="NUMERO_CONSECUTIVO_PROVEE" placeholder="NÚMERO DE SOLICITUD">
+				 <input type="text" class="form-control" id="NUMERO_CONSECUTIVO_PROVEE" required=""  value="<?php echo $NUMERO_CONSECUTIVO_PROVEE; ?>" name="NUMERO_CONSECUTIVO_PROVEE" placeholder="NÚMERO DE SOLICITUD" readonly="readonly">
 				 </div>
 				 </td>
                  </tr>
@@ -454,8 +454,9 @@ while($rowsube=mysqli_fetch_array($listadosube)){
                  <tr style="background: #d2faf1">
                  <th scope="row"> <label for="validationCustom03" class="form-label">AGREGA EL No. DE EVENTO:<br><a style="color:red;font-size:11px">OBLIGATORIO</a></label></th>
 				  
-                 <td><div id="NUMERO_EVENTO2"><input type="text" class="form-control" id="validationCustom03" required=""  value="<?php echo $NUMERO_EVENTO; ?>" name="NUMERO_EVENTO" placeholder="No. DE EVENTO"></td>
+        <td><div id="NUMERO_EVENTO2"><input type="text" class="form-control"  required=""  value="<?php echo $NUMERO_EVENTO; ?>" name="NUMERO_EVENTO" placeholder="No. DE EVENTO"></td>
                  </tr>
+
                 
                  <tr style="background:#fcf3cf"> 
                  <th scope="row"> <label for="validationCustom03" class="form-label">CONCEPTO:</label></th>
@@ -734,7 +735,7 @@ while($rowsube=mysqli_fetch_array($listadosube)){
 				 </td> </tr>-->
 
          
-         <input type="hidden" style="width:200px;"  class="form-control" id="validationCustom03"   value="<?php echo date('d-m-Y'); ?>" name="FECHA_DE_LLENADO">
+ <input type="hidden" style="width:200px;" class="form-control" id="validationCustom03" value="<?php echo date('Y-m-d H:i:s'); ?>" name="FECHA_DE_LLENADO">
          <input type="hidden" name="hiddensubefactura" value="hiddensubefactura">
 		 
          <input type="hidden" name="FECHA_DE_PAGO" value="<?php echo $FECHA_DE_PAGO; ?>">

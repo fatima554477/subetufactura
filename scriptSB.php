@@ -307,7 +307,21 @@ $(document).keydown(function(event) {
 });
 
 $("#enviarSUBIRFACTURA").click(function(){
-	/*nuevo script pbajar archivos y datos*/
+        /*nuevo script pbajar archivos y datos*/
+const scrollPositionBeforeSubmit = $(window).scrollTop();
+const restoreScroll = () => {
+    $(window).scrollTop(scrollPositionBeforeSubmit);
+};
+const numeroEventoInput = $("#NUMERO_EVENTO2");
+const numeroEvento = numeroEventoInput.val().trim();
+const prefijosNumeroEvento = ["EPC", "INN", "EVE"];
+
+if (prefijosNumeroEvento.includes(numeroEvento.toUpperCase())) {
+        $("#mensajeSUBIRFACTURA").html("<span style='color:red;'>FAVOR DE COMPLETAR EL NÚMERO DE EVENTO AGREGANDO EL NÚMERO CORRESPONDIENTE DESPUÉS DE LAS INICIALES DE LA EMPRESA.</span>").fadeIn().delay(3000).fadeOut();
+        numeroEventoInput.focus();
+        return;
+}
+
 const formData = new FormData($('#SUBIRFACTURAform')[0]);
 
 $.ajax({
@@ -377,7 +391,7 @@ $.ajax({
 			
 			$.getScript(load(1));
 			}else{
-			$("#mensajeSUBIRFACTURA").html(data).fadeIn().delay(3000).fadeOut();
+			$("#mensajeSUBIRFACTURA").html(data).fadeIn().delay(5000).fadeOut();
 		}
 })
 .fail(function() {
