@@ -103,6 +103,47 @@ $ENVIAR_EMAIL_DOCUFISCAL = isset($_POST["ENVIAR_EMAIL_DOCUFISCAL"])?$_POST["ENVI
 
 
 $action = isset($_POST["action"])?$_POST["action"]:"";
+
+/* Carga AJAX de acuses y complementos desde el listado de facturas. */
+if(in_array($action, array('documentos_pago_info', 'documentos_pago_guardar', 'documentos_pago_eliminar'), true)){
+	header('Content-Type: application/json; charset=utf-8');
+	$idRegistro = isset($_POST['id']) ? (int)$_POST['id'] : 0;
+	$idProveedor = isset($_SESSION['idPROV']) ? (string)$_SESSION['idPROV'] : '';
+	if($idRegistro < 1 || $idProveedor === ''){ echo json_encode(array('ok' => false, 'mensaje' => 'Registro no autorizado.')); exit; }
+	$registroPago = $SUBEFACTURA->documentos_pago_por_registro($idRegistro, $idProveedor);
+	if(!$registroPago){ echo json_encode(array('ok' => false, 'mensaje' => 'El registro no existe o no pertenece al proveedor.')); exit; }
+	$documentosRespuesta = function() use ($SUBEFACTURA, $idRegistro, $idProveedor) {
+		$datos = $SUBEFACTURA->documentos_pago_por_registro($idRegistro, $idProveedor);
+		return array(
+			'ACUSE_CANCELACION' => isset($datos['ACUSE_CANCELACION']) ? basename((string)$datos['ACUSE_CANCELACION']) : '',
+			'COMPLEMENTOS_PAGO_XML' => isset($datos['COMPLEMENTOS_PAGO_XML']) ? basename((string)$datos['COMPLEMENTOS_PAGO_XML']) : '',
+			'COMPLEMENTOS_PAGO_PDF' => isset($datos['COMPLEMENTOS_PAGO_PDF']) ? basename((string)$datos['COMPLEMENTOS_PAGO_PDF']) : ''
+		);
+	};
+	if($action === 'documentos_pago_info') { echo json_encode(array('ok' => true, 'documentos' => $documentosRespuesta())); exit; }
+	$campo = isset($_POST['campo']) ? $_POST['campo'] : '';
+	$campos = array('ACUSE_CANCELACION' => array('pdf' => array('application/pdf')), 'COMPLEMENTOS_PAGO_XML' => array('xml' => array('application/xml', 'text/xml')), 'COMPLEMENTOS_PAGO_PDF' => array('pdf' => array('application/pdf')));
+	if(!isset($campos[$campo])){ echo json_encode(array('ok' => false, 'mensaje' => 'Tipo de documento inválido.')); exit; }
+	if($campo === 'ACUSE_CANCELACION' && $registroPago['STATUS_DE_PAGO'] !== 'RECHAZADO'){ echo json_encode(array('ok' => false, 'mensaje' => 'El acuse sólo se permite para pagos rechazados.')); exit; }
+	if(($campo === 'COMPLEMENTOS_PAGO_XML' || $campo === 'COMPLEMENTOS_PAGO_PDF') && trim((string)$registroPago['PFORMADE_PAGO']) === '03'){ echo json_encode(array('ok' => false, 'mensaje' => 'El complemento no aplica para transferencia.')); exit; }
+	if($action === 'documentos_pago_eliminar'){
+		$ok = $SUBEFACTURA->eliminar_documento_pago($idRegistro, $idProveedor, $campo);
+		echo json_encode(array('ok' => $ok, 'mensaje' => $ok ? 'Documento eliminado.' : 'No fue posible eliminar el documento.', 'documentos' => $documentosRespuesta())); exit;
+	}
+	if(!isset($_FILES['archivo']) || $_FILES['archivo']['error'] !== UPLOAD_ERR_OK || !is_uploaded_file($_FILES['archivo']['tmp_name']) || (int)$_FILES['archivo']['size'] < 1){ echo json_encode(array('ok' => false, 'mensaje' => 'Seleccione un archivo válido.')); exit; }
+	$extension = strtolower(pathinfo((string)$_FILES['archivo']['name'], PATHINFO_EXTENSION));
+	$finfo = new finfo(FILEINFO_MIME_TYPE);
+	$mime = $finfo->file($_FILES['archivo']['tmp_name']);
+	$tipoEsperado = isset($campos[$campo]['pdf']) ? 'pdf' : 'xml';
+	if($extension !== $tipoEsperado) { echo json_encode(array('ok' => false, 'mensaje' => 'La extensión del archivo no es válida.')); exit; }
+	if(!in_array($mime, $campos[$campo][$tipoEsperado], true)){ echo json_encode(array('ok' => false, 'mensaje' => 'El tipo MIME del archivo no es válido.')); exit; }
+	$nombre = $conexion->solocargartemp('archivo');
+	if(in_array($nombre, array('ERROR_SUBIDA', 'VACIO', 'SIN_EXTENSION', '1', '2'), true)){ echo json_encode(array('ok' => false, 'mensaje' => 'No fue posible almacenar el archivo.')); exit; }
+	$ok = $SUBEFACTURA->guardar_documento_pago($idRegistro, $idProveedor, $campo, $nombre);
+	if(!$ok && is_file(__ROOT1__.'/includes/archivos/'.basename($nombre))){ unlink(__ROOT1__.'/includes/archivos/'.basename($nombre)); }
+	if($ok){ $SUBEFACTURA->registrar_bitacora_sb('adjuntar', 'Se adjuntó un documento de pago: '.$campo, $idRegistro, '02SUBETUFACTURADOCTOS'); }
+	echo json_encode(array('ok' => $ok, 'mensaje' => $ok ? 'Documento guardado.' : 'No fue posible guardar el documento.', 'documentos' => $documentosRespuesta())); exit;
+}
 if($action=='total_menos_dep'){
 	
 	

@@ -590,20 +590,7 @@ $('#mensajeSUBIRFACTURA').html("<span id='ACTUALIZADO' >"+data+"</span>");
 
 
 
-    ------------------------------------------------------- */
-    $(document).on('click', '.view_dataPAGOPROVEEmodifica', function () {
-        var personal_id = $(this).attr('id');
-        $.ajax({
-            url: 'pagoproveedores/subir_cancelacion.php',
-            method: 'POST',
-            data: { personal_id: personal_id },
-            beforeSend: function () { $('#mensajepagoproveedores').html('cargando...'); },
-            success: function (data) {
-                $('#personal_detalles').html(data);
-                $('#dataModal').modal('toggle');
-            }
-        });
-    });
+
 
 
 //NOMBRE DEL BOTÓN

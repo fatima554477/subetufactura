@@ -1078,7 +1078,7 @@ public function solocargartemp($archivo) {
 		return mysqli_query($conn, "select id,".$ADJUNTAR_COTIZACION.",fechaingreso from 02SUBETUFACTURADOCTOS where idRelacion = '".$_SESSION['idPROV']."' and idTemporal = 'si' and (".$ADJUNTAR_COTIZACION." is not null or ".$ADJUNTAR_COTIZACION." <> '') ORDER BY id DESC ");
 	}
 
-	public function getDoctos_subefactura($ID){
+		public function getDoctos_subefactura($ID){
 		$conn = $this->db();
 		$sql = "SELECT COMPLEMENTOS_PAGO_PDF, COMPLEMENTOS_PAGO_XML
 		FROM 02SUBETUFACTURADOCTOS
@@ -1092,13 +1092,70 @@ public function solocargartemp($archivo) {
 		$conn = $this->db();
 		$resultado = mysqli_query($conn, "SELECT idTemporal, ADJUNTAR_FACTURA_XML FROM 02SUBETUFACTURADOCTOS WHERE id = '".$id."' ");
 		$row = mysqli_fetch_array($resultado, MYSQLI_ASSOC);
-		if($row && $row['ADJUNTAR_FACTURA_XML'] != ''){
-			mysqli_query($conn, "DELETE FROM 02XML WHERE ultimo_id = '".$row['idTemporal']."' ");
+	if($row && $row['ADJUNTAR_FACTURA_XML'] != ''){
+				mysqli_query($conn, "DELETE FROM 02XML WHERE ultimo_id = '".$row['idTemporal']."' ");
+			}
+			return mysqli_query($conn, "delete from 02SUBETUFACTURADOCTOS where id = '".$id."' ");
 		}
-		return mysqli_query($conn, "delete from 02SUBETUFACTURADOCTOS where id = '".$id."' ");
-	}
 
-	public function delete_subefactura2nombre($nombre){
+		/** Obtiene el registro y los documentos de pago únicamente si pertenecen al proveedor en sesión. */
+		public function documentos_pago_por_registro($id, $idRelacion){
+			$conn = $this->db();
+			$id = (int)$id;
+			$stmt = mysqli_prepare($conn, 'SELECT f.STATUS_DE_PAGO, f.PFORMADE_PAGO, d.ACUSE_CANCELACION, d.COMPLEMENTOS_PAGO_XML, d.COMPLEMENTOS_PAGO_PDF FROM 02SUBETUFACTURA f LEFT JOIN 02SUBETUFACTURADOCTOS d ON d.idTemporal = f.id AND d.idRelacion = f.idRelacion WHERE f.id = ? AND f.idRelacion = ? ORDER BY d.id DESC LIMIT 1');
+			if(!$stmt){ return null; }
+			mysqli_stmt_bind_param($stmt, 'is', $id, $idRelacion);
+			mysqli_stmt_execute($stmt);
+			$resultado = mysqli_stmt_get_result($stmt);
+			return $resultado ? mysqli_fetch_assoc($resultado) : null;
+		}
+
+		/** Guarda un documento de pago en el mismo registro de documentos, reemplazando sólo el campo indicado. */
+		public function guardar_documento_pago($id, $idRelacion, $campo, $nombreArchivo){
+			$campos = array('ACUSE_CANCELACION', 'COMPLEMENTOS_PAGO_XML', 'COMPLEMENTOS_PAGO_PDF');
+			if(!in_array($campo, $campos, true) || $id < 1 || trim($nombreArchivo) === ''){ return false; }
+			$conn = $this->db();
+			$id = (int)$id;
+			$stmt = mysqli_prepare($conn, 'SELECT id, '.$campo.' AS archivo FROM 02SUBETUFACTURADOCTOS WHERE idTemporal = ? AND idRelacion = ? ORDER BY id DESC LIMIT 1');
+			mysqli_stmt_bind_param($stmt, 'is', $id, $idRelacion);
+			mysqli_stmt_execute($stmt);
+			$registro = mysqli_fetch_assoc(mysqli_stmt_get_result($stmt));
+			if($registro){
+				$sql = 'UPDATE 02SUBETUFACTURADOCTOS SET '.$campo.' = ? WHERE id = ? AND idRelacion = ?';
+				$stmt = mysqli_prepare($conn, $sql);
+				mysqli_stmt_bind_param($stmt, 'sis', $nombreArchivo, $registro['id'], $idRelacion);
+			}else{
+				$sql = 'INSERT INTO 02SUBETUFACTURADOCTOS (idRelacion, idTemporal, '.$campo.') VALUES (?, ?, ?)';
+				$stmt = mysqli_prepare($conn, $sql);
+				mysqli_stmt_bind_param($stmt, 'sis', $idRelacion, $id, $nombreArchivo);
+			}
+			$guardado = mysqli_stmt_execute($stmt);
+			if($guardado && $registro && !empty($registro['archivo']) && $registro['archivo'] !== $nombreArchivo){
+				$ruta = __ROOT3__.'/includes/archivos/'.basename((string)$registro['archivo']);
+				if(is_file($ruta)){ unlink($ruta); }
+			}
+			return $guardado;
+		}
+
+		public function eliminar_documento_pago($id, $idRelacion, $campo){
+			$campos = array('ACUSE_CANCELACION', 'COMPLEMENTOS_PAGO_XML', 'COMPLEMENTOS_PAGO_PDF');
+			if(!in_array($campo, $campos, true) || $id < 1){ return false; }
+			$conn = $this->db();
+			$id = (int)$id;
+			$stmt = mysqli_prepare($conn, 'SELECT id, '.$campo.' AS archivo FROM 02SUBETUFACTURADOCTOS WHERE idTemporal = ? AND idRelacion = ? ORDER BY id DESC LIMIT 1');
+			mysqli_stmt_bind_param($stmt, 'is', $id, $idRelacion);
+			mysqli_stmt_execute($stmt);
+			$registro = mysqli_fetch_assoc(mysqli_stmt_get_result($stmt));
+			if(!$registro){ return false; }
+			$stmt = mysqli_prepare($conn, 'UPDATE 02SUBETUFACTURADOCTOS SET '.$campo.' = NULL WHERE id = ? AND idRelacion = ?');
+			mysqli_stmt_bind_param($stmt, 'is', $registro['id'], $idRelacion);
+			if(!mysqli_stmt_execute($stmt)){ return false; }
+			$archivo = basename((string)$registro['archivo']);
+			$ruta = __ROOT3__.'/includes/archivos/'.$archivo;
+			if($archivo !== '' && is_file($ruta)){ unlink($ruta); }
+			return true;
+		}
+		public function delete_subefactura2nombre($nombre){
 		$conn = $this->db();
 		mysqli_query($conn, "delete from 02SUBETUFACTURADOCTOS where ADJUNTAR_FACTURA_XML = '".$nombre."' ");
 	}
