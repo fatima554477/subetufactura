@@ -415,7 +415,7 @@ elseif($borrasbdoc =='borrasbdoc'){
 
 $idPROV = isset($_SESSION["idPROV"])?$_SESSION["idPROV"]:"";
 $IPSB1p = isset($_POST["IPSB1p"])?$_POST["IPSB1p"]:"";
-$camposArchivoSB = array('ADJUNTAR_FACTURA_PDF','ADJUNTAR_FACTURA_XML','ADJUNTAR_COTIZACION','ACUSE_CANCELACION','CONPROBANTE_TRANSFERENCIA','ADJUNTAR_ARCHIVO_1');
+$camposArchivoSB = array('ADJUNTAR_FACTURA_PDF','ADJUNTAR_FACTURA_XML','ADJUNTAR_COTIZACION','CONPROBANTE_TRANSFERENCIA','ADJUNTAR_ARCHIVO_1');
 
 foreach($camposArchivoSB as $campoArchivoSB){
 
@@ -468,7 +468,7 @@ foreach($camposArchivoSB as $campoArchivoSB){
 
 }
 
-if( $IPSB1p != '' and ($_FILES["ADJUNTAR_FACTURA_PDF"] == true or $_FILES["ADJUNTAR_FACTURA_XML"] == true or  $_FILES["ADJUNTAR_COTIZACION"] true or  $_FILES["ACUSE_CANCELACION"] == true  or  $_FILES["CONPROBANTE_TRANSFERENCIA"] == true  or  $_FILES["ADJUNTAR_ARCHIVO_1"] == true )) {
+if( $IPSB1p != '' and ($_FILES["ADJUNTAR_FACTURA_PDF"] == true or $_FILES["ADJUNTAR_FACTURA_XML"] == true or  $_FILES["ADJUNTAR_COTIZACION"] == true  or  $_FILES["CONPROBANTE_TRANSFERENCIA"] == true  or  $_FILES["ADJUNTAR_ARCHIVO_1"] == true )) {
 if($idPROV != ''){
 
 foreach($_FILES AS $ETQIETA => $VALOR){
@@ -591,7 +591,7 @@ $SUBEFACTURA->registrar_bitacora_sb('adjuntar', 'Se adjuntó/actualizó un docum
 
 }
 
-if(  $IPSB1p == '' and $hiddensubefactura!= 'hiddensubefactura' and ($_FILES["ADJUNTAR_FACTURA_PDF"] == true or $_FILES["ADJUNTAR_FACTURA_XML"] == true or  $_FILES["ADJUNTAR_COTIZACION"] true or  $_FILES["ACUSE_CANCELACION"] == true  or  $_FILES["CONPROBANTE_TRANSFERENCIA"] == true  or  $_FILES["ADJUNTAR_ARCHIVO_1"] == true )) {
+if(  $IPSB1p == '' and $hiddensubefactura!= 'hiddensubefactura' and ($_FILES["ADJUNTAR_FACTURA_PDF"] == true or $_FILES["ADJUNTAR_FACTURA_XML"] == true or  $_FILES["ADJUNTAR_COTIZACION"] == true  or  $_FILES["CONPROBANTE_TRANSFERENCIA"] == true  or  $_FILES["ADJUNTAR_ARCHIVO_1"] == true )) {
 if($idPROV != ''){
 
 foreach($_FILES AS $ETQIETA => $VALOR){
