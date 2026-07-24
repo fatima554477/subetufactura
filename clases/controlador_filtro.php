@@ -351,9 +351,7 @@ if($database->plantilla_filtro($nombreTabla,"ADJUNTAR_COTIZACION",$altaeventos,$
 <?php } ?><?php                                     
 if($database->plantilla_filtro($nombreTabla,"CONPROBANTE_TRANSFERENCIA",$altaeventos,$DEPARTAMENTO)=="si"){ ?><th style="background:#f48a81"> COMPROBANTE DE TRANSFERENCIA</th>
 <?php } ?>
-<?php
-if($database->plantilla_filtro($nombreTabla,"ACUSE_CANCELACION",$altaeventos,$DEPARTAMENTO)=="si"){ ?><th style="background:#c9e8e8;text-align:center">ACUSE DE CANCELACIÓN</th>
-<?php } ?>
+
  
  
 <?php 
@@ -362,9 +360,27 @@ if($database->plantilla_filtro($nombreTabla,"NOMBRE_DEL_EJECUTIVO",$altaeventos,
  
  
  
+ 
 <?php 
 if($database->plantilla_filtro($nombreTabla,"OBSERVACIONES_1",$altaeventos,$DEPARTAMENTO)=="si"){ ?><th style="background:#c9e8e8;text-align:center">OBSERVACIONES </th>
-<?php } ?><?php 
+<?php } ?>
+
+<?php
+if($database->plantilla_filtro($nombreTabla,"ACUSE_CANCELACION",$altaeventos,$DEPARTAMENTO)=="si"){ ?><th style="background:#c9e8e8;text-align:center">ACUSE DE CANCELACIÓN</th>
+<?php } ?>
+
+
+<?php
+if($database->plantilla_filtro($nombreTabla,"COMPLEMENTOS_PAGO_XML",$altaeventos,$DEPARTAMENTO)=="si"){ ?><th style="background:#c9e8e8;text-align:center"> COMPLEMENTOS PAGO XML</th>
+<?php } ?>
+
+
+<?php
+if($database->plantilla_filtro($nombreTabla,"COMPLEMENTOS_PAGO_PDF",$altaeventos,$DEPARTAMENTO)=="si"){ ?><th style="background:#c9e8e8;text-align:center">COMPLEMENTOS PAGO PDF</th>
+<?php } ?>
+
+
+<?php 
 if($database->plantilla_filtro($nombreTabla,"ADJUNTAR_ARCHIVO_1",$altaeventos,$DEPARTAMENTO)=="si"){ ?><th style="background:#c9e8e8;text-align:center">ARCHIVO RELACIONADO A ESTE GASTO:</th>
 <?php } ?><?php 
 if($database->plantilla_filtro($nombreTabla,"FECHA_DE_LLENADO",$altaeventos,$DEPARTAMENTO)=="si"){ ?><th style="background:#c9e8e8;text-align:center">FECHA Y HORA <br>DE LLENADO</th>
@@ -493,7 +509,10 @@ if($database->plantilla_filtro($nombreTabla,"TOTAL_IMPUESTOS_RETENIDOS",$altaeve
  
  
  
+<?php 
+if($database->plantilla_filtro($nombreTabla,"TUA",$altaeventos,$DEPARTAMENTO)=="si"){ ?>
 <th style="background:#f9f3a1;text-align:center">TUA:</th>
+<?php } ?>
  
 <?php 
 if($database->plantilla_filtro($nombreTabla,"total",$altaeventos,$DEPARTAMENTO)=="si"){ ?>
@@ -505,6 +524,8 @@ if($database->plantilla_filtro($nombreTabla,"total",$altaeventos,$DEPARTAMENTO)=
  
  
  
+<th style="background:#c9e8e8;text-align:center"></th>
+
 <?php /*termina copiar y terminaA3*/ ?>
             </tr>
             <tr>
@@ -684,9 +705,7 @@ if($database->plantilla_filtro($nombreTabla,"CONPROBANTE_TRANSFERENCIA",$altaeve
 echo $CONPROBANTE_TRANSFERENCIA; ?>"></td>
 <?php } ?>
  
-<?php if($database->plantilla_filtro($nombreTabla,"ACUSE_CANCELACION",$altaeventos,$DEPARTAMENTO)=="si"){ ?><td style="background:#c9e8e8;text-align:center"></td>
- 
-<?php } ?>
+
  
 <?php  
 if($database->plantilla_filtro($nombreTabla,"NOMBRE_DEL_EJECUTIVO",$altaeventos,$DEPARTAMENTO)=="si"){ ?><td style="background:#c9e8e8"><input type="text" class="form-control" id="NOMBRE_DEL_EJECUTIVO_1" value="<?php 
@@ -699,9 +718,20 @@ echo $NOMBRE_DEL_EJECUTIVO; ?>"></td>
 if($database->plantilla_filtro($nombreTabla,"OBSERVACIONES_1",$altaeventos,$DEPARTAMENTO)=="si"){ ?><td style="background:#c9e8e8"><input type="text" class="form-control" id="OBSERVACIONES_1_1" value="<?php 
 echo $OBSERVACIONES_1; ?>"></td>
 <?php } ?>
-<?php  
-if($database->plantilla_filtro($nombreTabla,"ADJUNTAR_ARCHIVO_1",$altaeventos,$DEPARTAMENTO)=="si"){ ?><td style="background:#c9e8e8;text-align:center"><input type="text" class="form-control" id="ADJUNTAR_ARCHIVO_1" value="<?php
-echo $ADJUNTAR_ARCHIVO_1; ?>"></td>
+
+<?php if($database->plantilla_filtro($nombreTabla,"ACUSE_CANCELACION",$altaeventos,$DEPARTAMENTO)=="si"){ ?><td style="background:#c9e8e8;text-align:center"></td>
+ 
+<?php } ?>
+
+<?php if($database->plantilla_filtro($nombreTabla,"COMPLEMENTOS_PAGO_XML",$altaeventos,$DEPARTAMENTO)=="si"){ ?><td style="background:#c9e8e8;text-align:center"></td>
+ 
+<?php } ?>
+
+<?php if($database->plantilla_filtro($nombreTabla,"COMPLEMENTOS_PAGO_PDF",$altaeventos,$DEPARTAMENTO)=="si"){ ?><td style="background:#c9e8e8;text-align:center"></td>
+ 
+<?php } ?>
+<?php if($database->plantilla_filtro($nombreTabla,"ADJUNTAR_ARCHIVO_1",$altaeventos,$DEPARTAMENTO)=="si"){ ?><td style="background:#c9e8e8;text-align:center"></td>
+ 
 <?php } ?>
  
 <?php  
@@ -768,7 +798,7 @@ if($database->plantilla_filtro($nombreTabla,"CLAVE_PODUCTO",$altaeventos,$DEPART
 echo $ClaveProdServConcepto; ?>"></td>
 <?php } ?>
 <?php  
-if($database->plantilla_filtro($nombreTabla,"DESCRIPCION ",$altaeventos,$DEPARTAMENTO)=="si"){ ?>
+if($database->plantilla_filtro($nombreTabla,"DESCRIPCION",$altaeventos,$DEPARTAMENTO)=="si"){ ?>
 <td style="background:#f9f3a1;text-align:center"><input type="text" class="form-control" id="DescripcionConcepto" value="<?php
 echo $DescripcionConcepto ; ?>"></td>
 <?php } ?>
@@ -827,7 +857,7 @@ echo $fechaTimbrado; ?>"></td>
  
  
 <?php  
-if($database->plantilla_filtro($nombreTabla,"SUBTOTAL",$altaeventos,$DEPARTAMENTO)=="si"){ ?>
+if($database->plantilla_filtro($nombreTabla,"subTotal",$altaeventos,$DEPARTAMENTO)=="si"){ ?>
 <td style="background:#f9f3a1;text-align:center"><input type="text" class="form-control" id="subTotal" value="<?php
 echo $subTotal; ?>"></td>
 <?php } ?>
@@ -861,8 +891,11 @@ echo $TImpuestosRetenidos; ?>"></td>
  
  
  
+<?php  
+if($database->plantilla_filtro($nombreTabla,"TUA",$altaeventos,$DEPARTAMENTO)=="si"){ ?>
 <td style="background:#f9f3a1;text-align:center"><input type="text" class="form-control" id="TUA" value="<?php
 echo $TUA; ?>"></td>
+<?php } ?>
  
  
  
@@ -889,6 +922,8 @@ if($database->plantilla_filtro($nombreTabla,"total",$altaeventos,$DEPARTAMENTO)=
  
  
  
+<td style="background:#c9e8e8;text-align:center"></td>
+
 <?php /*termina copiar y terminaA4*/ ?>
 	
  
@@ -1153,15 +1188,21 @@ $MONTO_DEPOSITAR12 += $row['MONTO_DEPOSITAR']; $colspan2 += 1;
 <?php  if($database->plantilla_filtro($nombreTabla,"CONPROBANTE_TRANSFERENCIA",$altaeventos,$DEPARTAMENTO)=="si"){ ?><td style="text-align:center"><?php echo $CONPROBANTE_TRANSFERENCIA; $colspan2 += 1; ?></td>
 <?php } ?>
  
-<?php  if($database->plantilla_filtro($nombreTabla,"ACUSE_CANCELACION",$altaeventos,$DEPARTAMENTO)=="si"){ ?><td style="text-align:center"><?php echo $ACUSE_CANCELACION; $colspan2 += 1; ?></td>
-<?php } ?>
- 
- 
 <?php  if($database->plantilla_filtro($nombreTabla,"NOMBRE_DEL_EJECUTIVO",$altaeventos,$DEPARTAMENTO)=="si"){ ?><td style="text-align:center"><?php echo $row['NOMBRE_DEL_EJECUTIVO']; $colspan2 += 1;?></td>
 <?php } ?>
  
 <?php  if($database->plantilla_filtro($nombreTabla,"OBSERVACIONES_1",$altaeventos,$DEPARTAMENTO)=="si"){ ?><td style="text-align:center"><?php echo $row['OBSERVACIONES_1']; $colspan2 += 1;?></td>
 <?php } ?>
+<?php  if($database->plantilla_filtro($nombreTabla,"ACUSE_CANCELACION",$altaeventos,$DEPARTAMENTO)=="si"){ ?><td style="text-align:center"><?php echo $ACUSE_CANCELACION; $colspan2 += 1; ?></td>
+<?php } ?>
+
+<?php  if($database->plantilla_filtro($nombreTabla,"COMPLEMENTOS_PAGO_XML",$altaeventos,$DEPARTAMENTO)=="si"){ ?><td style="text-align:center"><?php echo $COMPLEMENTOS_PAGO_XML; $colspan2 += 1; ?></td>
+<?php } ?>
+
+<?php  if($database->plantilla_filtro($nombreTabla,"COMPLEMENTOS_PAGO_PDF",$altaeventos,$DEPARTAMENTO)=="si"){ ?><td style="text-align:center"><?php echo $COMPLEMENTOS_PAGO_PDF; $colspan2 += 1; ?></td>
+<?php } ?>
+
+
 <?php  if($database->plantilla_filtro($nombreTabla,"ADJUNTAR_ARCHIVO_1",$altaeventos,$DEPARTAMENTO)=="si"){ ?><td style="text-align:center"><?php echo $ADJUNTAR_ARCHIVO_1;  $colspan2 += 1;?></td>
 <?php } ?>
  
@@ -1291,7 +1332,7 @@ if ($database->plantilla_filtro($nombreTabla,"FECHA_DE_LLENADO",$altaeventos,$DE
  
  
  
-<?php  if($database->plantilla_filtro($nombreTabla,"SUBTOTAL",$altaeventos,$DEPARTAMENTO)=="si"){ ?>
+<?php  if($database->plantilla_filtro($nombreTabla,"subTotal",$altaeventos,$DEPARTAMENTO)=="si"){ ?>
     <td style="text-align:center"><?php 
 	echo number_format($row['subTotal'],2,'.',',');
 	$subTotal12 += $row['subTotal'];
@@ -1317,7 +1358,7 @@ if ($database->plantilla_filtro($nombreTabla,"FECHA_DE_LLENADO",$altaeventos,$DE
 	 ?></td>
 <?php } ?>
  
-<?php  /*if($database->plantilla_filtro($nombreTabla,"TOTAL_IMPUESTOS_TRASLADADOS",$altaeventos,$DEPARTAMENTO)=="si"){*/ ?>
+<?php  if($database->plantilla_filtro($nombreTabla,"TOTAL_IMPUESTOS_TRASLADADOS",$altaeventos,$DEPARTAMENTO)=="si"){ ?>
     <td style="text-align:center">$<?php 
  
 //$IVAXML = '';
@@ -1342,7 +1383,7 @@ echo $IVAXML;
 	
 	
 	?></td>
-<?php /*}*/ ?>
+<?php } ?>
  
  
 <?php  if($database->plantilla_filtro($nombreTabla,"TOTAL_IMPUESTOS_RETENIDOS",$altaeventos,$DEPARTAMENTO)=="si"){ ?>
@@ -1364,6 +1405,7 @@ echo $IVAXML;
  
  
  
+<?php  if($database->plantilla_filtro($nombreTabla,"total",$altaeventos,$DEPARTAMENTO)=="si"){ ?>
    <td style="text-align:center"><?php 
  
 $total123 = isset($row['totalf'])?$row['totalf']:'' ;
@@ -1387,6 +1429,7 @@ $totales2 = 'si';
 	
 	
 	?></td>
+<?php } ?>
  
  
  
@@ -1416,12 +1459,7 @@ $totales2 = 'si';
  
  
  
- <!-- MODIFICAR -->
-<td >
-
-	<input type="button" name="view" value="CANCELACIÓN" id="<?php echo $row["02SUBETUFACTURAid"]; ?>" class="btn btn-info btn-xs view_dataPAGOPROVEEmodifica" />
-
-</td>
+ 
  
  
  
@@ -1505,7 +1543,7 @@ $totales2 = 'si';
  
  
  
-<?php if($database->plantilla_filtro($nombreTabla,"SUBTOTAL",$altaeventos,$DEPARTAMENTO)=="si"){ ?>
+<?php if($database->plantilla_filtro($nombreTabla,"subTotal",$altaeventos,$DEPARTAMENTO)=="si"){ ?>
 <td style="text-align:center"><strong style="font-size:16px">$<?php echo number_format($subTotal12,2,'.',','); ?></strong></td>
 <?php } ?>
                                                              
@@ -1528,7 +1566,9 @@ $totales2 = 'si';
  
  
  
+<?php  if($database->plantilla_filtro($nombreTabla,"TUA",$altaeventos,$DEPARTAMENTO)=="si"){  ?>
 <td style="text-align:center" ><strong style="font-size:16px" >$<?php echo number_format($TUA12,2,'.',','); ?></strong></td>
+<?php } ?>
  
  
  
