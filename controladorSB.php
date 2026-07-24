@@ -137,7 +137,9 @@ if(in_array($action, array('documentos_pago_info', 'documentos_pago_guardar', 'd
 	$tipoEsperado = isset($campos[$campo]['pdf']) ? 'pdf' : 'xml';
 	if($extension !== $tipoEsperado) { echo json_encode(array('ok' => false, 'mensaje' => 'La extensión del archivo no es válida.')); exit; }
 	if(!in_array($mime, $campos[$campo][$tipoEsperado], true)){ echo json_encode(array('ok' => false, 'mensaje' => 'El tipo MIME del archivo no es válido.')); exit; }
-	$nombre = $conexion->solocargartemp('archivo');
+	/* solocargartemp pertenece a accesoclase ($SUBEFACTURA), no a colaboradores.
+	 * Usar la instancia correcta permite mover el archivo antes de guardar su nombre. */
+	$nombre = $SUBEFACTURA->solocargartemp('archivo');
 	if(in_array($nombre, array('ERROR_SUBIDA', 'VACIO', 'SIN_EXTENSION', '1', '2'), true)){ echo json_encode(array('ok' => false, 'mensaje' => 'No fue posible almacenar el archivo.')); exit; }
 	$ok = $SUBEFACTURA->guardar_documento_pago($idRegistro, $idProveedor, $campo, $nombre);
 	if(!$ok && is_file(__ROOT1__.'/includes/archivos/'.basename($nombre))){ unlink(__ROOT1__.'/includes/archivos/'.basename($nombre)); }

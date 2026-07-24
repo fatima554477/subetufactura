@@ -1099,15 +1099,26 @@ public function solocargartemp($archivo) {
 		}
 
 		/** Obtiene el registro y los documentos de pago únicamente si pertenecen al proveedor en sesión. */
-		public function documentos_pago_por_registro($id, $idRelacion){
+public function documentos_pago_por_registro($id, $idRelacion){
 			$conn = $this->db();
 			$id = (int)$id;
 			$stmt = mysqli_prepare($conn, 'SELECT f.STATUS_DE_PAGO, f.PFORMADE_PAGO, d.ACUSE_CANCELACION, d.COMPLEMENTOS_PAGO_XML, d.COMPLEMENTOS_PAGO_PDF FROM 02SUBETUFACTURA f LEFT JOIN 02SUBETUFACTURADOCTOS d ON d.idTemporal = f.id AND d.idRelacion = f.idRelacion WHERE f.id = ? AND f.idRelacion = ? ORDER BY d.id DESC LIMIT 1');
 			if(!$stmt){ return null; }
 			mysqli_stmt_bind_param($stmt, 'is', $id, $idRelacion);
-			mysqli_stmt_execute($stmt);
-			$resultado = mysqli_stmt_get_result($stmt);
-			return $resultado ? mysqli_fetch_assoc($resultado) : null;
+			if(!mysqli_stmt_execute($stmt)){ mysqli_stmt_close($stmt); return null; }
+			/* No usar mysqli_stmt_get_result: requiere mysqlnd y su ausencia hacía que
+			 * la consulta AJAX terminara con un error fatal antes de devolver JSON. */
+			mysqli_stmt_bind_result($stmt, $statusDePago, $formaDePago, $acuseCancelacion, $complementoXml, $complementoPdf);
+			$encontrado = mysqli_stmt_fetch($stmt);
+			mysqli_stmt_close($stmt);
+			if(!$encontrado){ return null; }
+			return array(
+				'STATUS_DE_PAGO' => $statusDePago,
+				'PFORMADE_PAGO' => $formaDePago,
+				'ACUSE_CANCELACION' => $acuseCancelacion,
+				'COMPLEMENTOS_PAGO_XML' => $complementoXml,
+				'COMPLEMENTOS_PAGO_PDF' => $complementoPdf
+			);
 		}
 
 		/** Guarda un documento de pago en el mismo registro de documentos, reemplazando sólo el campo indicado. */
@@ -1116,20 +1127,26 @@ public function solocargartemp($archivo) {
 			if(!in_array($campo, $campos, true) || $id < 1 || trim($nombreArchivo) === ''){ return false; }
 			$conn = $this->db();
 			$id = (int)$id;
-			$stmt = mysqli_prepare($conn, 'SELECT id, '.$campo.' AS archivo FROM 02SUBETUFACTURADOCTOS WHERE idTemporal = ? AND idRelacion = ? ORDER BY id DESC LIMIT 1');
+	$stmt = mysqli_prepare($conn, 'SELECT id, '.$campo.' AS archivo FROM 02SUBETUFACTURADOCTOS WHERE idTemporal = ? AND idRelacion = ? ORDER BY id DESC LIMIT 1');
+			if(!$stmt){ return false; }
 			mysqli_stmt_bind_param($stmt, 'is', $id, $idRelacion);
-			mysqli_stmt_execute($stmt);
-			$registro = mysqli_fetch_assoc(mysqli_stmt_get_result($stmt));
+			if(!mysqli_stmt_execute($stmt)){ mysqli_stmt_close($stmt); return false; }
+			mysqli_stmt_bind_result($stmt, $idDocumento, $archivoActual);
+			$registro = mysqli_stmt_fetch($stmt) ? array('id' => $idDocumento, 'archivo' => $archivoActual) : null;
+			mysqli_stmt_close($stmt);
 			if($registro){
 				$sql = 'UPDATE 02SUBETUFACTURADOCTOS SET '.$campo.' = ? WHERE id = ? AND idRelacion = ?';
 				$stmt = mysqli_prepare($conn, $sql);
+				if(!$stmt){ return false; }
 				mysqli_stmt_bind_param($stmt, 'sis', $nombreArchivo, $registro['id'], $idRelacion);
 			}else{
 				$sql = 'INSERT INTO 02SUBETUFACTURADOCTOS (idRelacion, idTemporal, '.$campo.') VALUES (?, ?, ?)';
 				$stmt = mysqli_prepare($conn, $sql);
+				if(!$stmt){ return false; }
 				mysqli_stmt_bind_param($stmt, 'sis', $idRelacion, $id, $nombreArchivo);
 			}
 			$guardado = mysqli_stmt_execute($stmt);
+			mysqli_stmt_close($stmt);
 			if($guardado && $registro && !empty($registro['archivo']) && $registro['archivo'] !== $nombreArchivo){
 				$ruta = __ROOT3__.'/includes/archivos/'.basename((string)$registro['archivo']);
 				if(is_file($ruta)){ unlink($ruta); }
@@ -1141,12 +1158,19 @@ public function solocargartemp($archivo) {
 			$campos = array('ACUSE_CANCELACION', 'COMPLEMENTOS_PAGO_XML', 'COMPLEMENTOS_PAGO_PDF');
 			if(!in_array($campo, $campos, true) || $id < 1){ return false; }
 			$conn = $this->db();
-			$id = (int)$id;
-			$stmt = mysqli_prepare($conn, 'SELECT id, '.$campo.' AS archivo FROM 02SUBETUFACTURADOCTOS WHERE idTemporal = ? AND idRelacion = ? ORDER BY id DESC LIMIT 1');
+	$stmt = mysqli_prepare($conn, 'SELECT id, '.$campo.' AS archivo FROM 02SUBETUFACTURADOCTOS WHERE idTemporal = ? AND idRelacion = ? ORDER BY id DESC LIMIT 1');
+			if(!$stmt){ return false; }
 			mysqli_stmt_bind_param($stmt, 'is', $id, $idRelacion);
-			mysqli_stmt_execute($stmt);
-			$registro = mysqli_fetch_assoc(mysqli_stmt_get_result($stmt));
+			if(!mysqli_stmt_execute($stmt)){ mysqli_stmt_close($stmt); return false; }
+			mysqli_stmt_bind_result($stmt, $idDocumento, $archivoActual);
+			$registro = mysqli_stmt_fetch($stmt) ? array('id' => $idDocumento, 'archivo' => $archivoActual) : null;
+			mysqli_stmt_close($stmt);
 			if(!$registro){ return false; }
+			$stmt = mysqli_prepare($conn, 'UPDATE 02SUBETUFACTURADOCTOS SET '.$campo.' = NULL WHERE id = ? AND idRelacion = ?');
+			if(!$stmt){ return false; }
+			mysqli_stmt_bind_param($stmt, 'is', $registro['id'], $idRelacion);
+			if(!mysqli_stmt_execute($stmt)){ mysqli_stmt_close($stmt); return false; }
+			mysqli_stmt_close($stmt);
 			$stmt = mysqli_prepare($conn, 'UPDATE 02SUBETUFACTURADOCTOS SET '.$campo.' = NULL WHERE id = ? AND idRelacion = ?');
 			mysqli_stmt_bind_param($stmt, 'is', $registro['id'], $idRelacion);
 			if(!mysqli_stmt_execute($stmt)){ return false; }
