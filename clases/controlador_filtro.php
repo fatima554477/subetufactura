@@ -361,17 +361,9 @@ if($database->plantilla_filtro($nombreTabla,"NOMBRE_DEL_EJECUTIVO",$altaeventos,
 
 <?php 
 if($database->plantilla_filtro($nombreTabla,"OBSERVACIONES_1",$altaeventos,$DEPARTAMENTO)=="si"){ ?><th style="background:#c9e8e8;text-align:center">OBSERVACIONES </th>
-<?php } ?>
-
-<?php 
+<?php } ?><?php 
 if($database->plantilla_filtro($nombreTabla,"ADJUNTAR_ARCHIVO_1",$altaeventos,$DEPARTAMENTO)=="si"){ ?><th style="background:#c9e8e8;text-align:center">ARCHIVO RELACIONADO A ESTE GASTO:</th>
-<?php } ?>
-
-<?php 
-if($database->plantilla_filtro($nombreTabla,"ACUSE_CANCELACION",$altaeventos,$DEPARTAMENTO)=="si"){ ?><th style="background:#c9e8e8;text-align:center">ACUSE DE CANCELACIÓN:</th>
-<?php } ?>
-
-<?php 
+<?php } ?><?php 
 if($database->plantilla_filtro($nombreTabla,"FECHA_DE_LLENADO",$altaeventos,$DEPARTAMENTO)=="si"){ ?><th style="background:#c9e8e8;text-align:center">FECHA Y HORA <br>DE LLENADO</th>
 <?php } ?>
 
@@ -708,11 +700,6 @@ echo $ADJUNTAR_ARCHIVO_1; ?>"></td>
 <?php } ?>
 
 <?php  
-if($database->plantilla_filtro($nombreTabla,"ACUSE_CANCELACION",$altaeventos,$DEPARTAMENTO)=="si"){ ?><td style="background:#c9e8e8;text-align:center"><input type="text" class="form-control" id="ACUSE_CANCELACION" value="<?php
-echo $ACUSE_CANCELACION; ?>"></td>
-<?php } ?>
-
-<?php  
 if($database->plantilla_filtro($nombreTabla,"FECHA_DE_LLENADO",$altaeventos,$DEPARTAMENTO)=="si"){ ?><td style="background:#c9e8e8"><input type="date" class="form-control" id="FECHA_DE_LLENADO_1" value="<?php 
 echo $FECHA_DE_LLENADO; ?>"></td>
 <?php } ?>
@@ -966,7 +953,7 @@ else {
  
 	
 	$ADJUNTAR_FACTURA_PDF = '';$ADJUNTAR_FACTURA_XML='';$ADJUNTAR_COTIZACION='';$CONPROBANTE_TRANSFERENCIA='';$ADJUNTAR_ARCHIVO_1='';$COMPLEMENTOS_PAGO_PDF='';
-   $COMPLEMENTOS_PAGO_XML='';$CANCELACIONES_PDF='';$CANCELACIONES_XML='';$ADJUNTAR_FACTURA_DE_COMISION_PDF='';$ADJUNTAR_FACTURA_DE_COMISION_XML='';$CALCULO_DE_COMISION='';$ACUSE_CANCELACION='';
+   $COMPLEMENTOS_PAGO_XML='';$CANCELACIONES_PDF='';$CANCELACIONES_XML='';$ADJUNTAR_FACTURA_DE_COMISION_PDF='';$ADJUNTAR_FACTURA_DE_COMISION_XML='';$CALCULO_DE_COMISION='';
    $COMPROBANTE_DE_DEVOLUCION='';  $NOTA_DE_CREDITO_COMPRA='';$FOTO_ESTADO_PROVEE11='';$ADJUNTAR_ARCHIVO_1='';
 	$querycontrasDOCTOS = $database->Listado_subefacturaDOCTOS($row['02SUBETUFACTURAid']);
 	while($rowDOCTOS = mysqli_fetch_array($querycontrasDOCTOS))
@@ -1005,10 +992,6 @@ else {
 		}
       if($rowDOCTOS["CALCULO_DE_COMISION"]!=''){
 			$CALCULO_DE_COMISION .= '<a href="includes/archivos/'.$rowDOCTOS["CALCULO_DE_COMISION"].'" target ="_blank">Ver!</a><br/>';
-		}
-		
-		  if($rowDOCTOS["ACUSE_CANCELACION"]!=''){
-			$ACUSE_CANCELACION .= '<a href="includes/archivos/'.$rowDOCTOS["ACUSE_CANCELACION"].'" target ="_blank">Ver!</a><br/>';
 		}
       if($rowDOCTOS["COMPROBANTE_DE_DEVOLUCION"]!=''){
 			$COMPROBANTE_DE_DEVOLUCION .= '<a href="includes/archivos/'.$rowDOCTOS["COMPROBANTE_DE_DEVOLUCION"].'" target ="_blank">Ver!</a><br/>';
@@ -1170,8 +1153,7 @@ $MONTO_DEPOSITAR12 += $row['MONTO_DEPOSITAR']; $colspan2 += 1;
 <?php  if($database->plantilla_filtro($nombreTabla,"ADJUNTAR_ARCHIVO_1",$altaeventos,$DEPARTAMENTO)=="si"){ ?><td style="text-align:center"><?php echo $ADJUNTAR_ARCHIVO_1;  $colspan2 += 1;?></td>
 <?php } ?>
 
-<?php  if($database->plantilla_filtro($nombreTabla,"ACUSE_CANCELACION",$altaeventos,$DEPARTAMENTO)=="si"){ ?><td style="text-align:center"><?php echo $ACUSE_CANCELACION;  $colspan2 += 1;?></td>
-<?php } ?>
+
 <?php  
 if ($database->plantilla_filtro($nombreTabla,"FECHA_DE_LLENADO",$altaeventos,$DEPARTAMENTO)=="si") {
 
