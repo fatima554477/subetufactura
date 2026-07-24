@@ -108,22 +108,128 @@
 	            processData: false,
 	            data: form_data,
  beforeSend: function() {
-$('#1'+nombre).html('<p style="color:green;">Cargando archivo!</p>');
-$('#mensajeADJUNTOCOL').html('<p style="color:green;">Actualizado!</p>');
+$('#1'+nombre).html('<p style="color:green;"><span class="spinner-border spinner-border-sm"></span>&nbsp;Cargando archivo...</p>');
+
+$('#mensajeADJUNTOCOL').html('<p style="color:green;"><span class="spinner-border spinner-border-sm"></span>&nbsp;Cargando archivo...</p>');
+
     },				
 	            success:function(response) {
-if($.trim(response) == 2 ){
-$('#1'+nombre).html('<p style="color:red;">Error, archivo diferente a PDF, JPG o GIF.</p>');
+var resp = $.trim(response);
+
+if(resp.indexOf('VACIO^^') === 0){
+
+$('#1'+nombre).html('<p style="color:red;font-weight:600;">⚠️ EL ARCHIVO ESTÁ VACÍO (0 KB). Verifica que el archivo tenga contenido antes de subirlo.</p>');
+
 $('#'+nombre).val("");
-/*nuevo inicio*/
-}else if($.trim(response) == 3 ){
-	$('#1'+nombre).html('<p style="color:red;">UUID PREVIAMENTE CARGADO.</p>');
+}else if(resp.indexOf('SIN_EXTENSION^^') === 0){
+
+$('#1'+nombre).html('<p style="color:red;font-weight:600;">⚠️ EL ARCHIVO NO TIENE EXTENSIÓN RECONOCIDA. Asegúrate de que el nombre del archivo termine en .xml, .pdf, .jpg, etc.</p>');
+
+$('#'+nombre).val("");
+
+}else if(resp.indexOf('ERROR_SUBIDA^^') === 0){
+
+$('#1'+nombre).html('<p style="color:red;font-weight:600;">⚠️ ERROR AL RECIBIR EL ARCHIVO EN EL SERVIDOR. Puede que sea demasiado grande o que la conexión se haya interrumpido. Intenta de nuevo.</p>');
+
+$('#'+nombre).val("");
+
+}else if(resp == 2){
+
+var exts = (nombre === 'ADJUNTAR_FACTURA_XML') ? 'XML' : (nombre === 'ADJUNTAR_FACTURA_PDF') ? 'PDF' : 'PDF, JPG, PNG, DOCX, XML, XLSX, MP4, TXT u otro formato de documento';
+
+$('#1'+nombre).html('<p style="color:red;">⚠️ FORMATO DE ARCHIVO NO PERMITIDO. Este campo acepta únicamente archivos en formato: <strong>'+exts+'</strong>.</p>');
+
+$('#'+nombre).val("");
+
+}else if(resp == 1){
+
+$('#1'+nombre).html('<p style="color:red;font-weight:600;">⚠️ ERROR AL GUARDAR EL ARCHIVO EN EL SERVIDOR. Intenta de nuevo o contacta a soporte técnico.</p>');
+
+$('#'+nombre).val("");
+
+}else if(resp.indexOf('3^^') === 0 || resp == 3){
+
+var partes = resp.split('^^');
+
+var numeroSolicitud = partes[1] ? $.trim(partes[1]) : '';
+
+var numeroEvento = partes[2] ? $.trim(partes[2]) : '';
+
+var detalleEvento = numeroEvento !== '' ? ' — Evento: <strong>'+numeroEvento+'</strong>' : '';
+
+var msgDuplicado = numeroSolicitud !== '' ? '<p style="color:red;font-weight:600;">⚠️ UUID YA REGISTRADO — Se encuentra en la solicitud: <strong>'+numeroSolicitud+'</strong>'+detalleEvento+'</p>' : '<p style="color:red;font-weight:600;">⚠️ UUID PREVIAMENTE CARGADO.</p>';
+
+$('#1'+nombre).html(msgDuplicado);
+
+$('#'+nombre).val("");
+
+}else if(resp.indexOf('7^^^') === 0){
+
+var partesGasto = resp.split('^^^');
+
+var numeroGasto = partesGasto[1] ? $.trim(partesGasto[1]) : '';
+
+var msgGasto = numeroGasto !== '' ? '<p style="color:#C82909;font-weight:600;">⚠️ UUID YA REGISTRADO EN COMPROBACIÓN DE GASTOS — CON EL ID: <strong>'+numeroGasto+'</strong></p>' : '<p style="color:#C82909;font-weight:600;">⚠️ UUID PREVIAMENTE CARGADO EN COMPROBACIÓN DE GASTOS.</p>';
+
+$('#1'+nombre).html(msgGasto);
+
+$('#'+nombre).val("");
+
+}else if(resp.indexOf('5^^') === 0){
+
+$('#1'+nombre).html('<p style="color:red;font-weight:600;">⚠️ EL ARCHIVO XML ESTÁ VACÍO O NO CONTIENE INFORMACIÓN VÁLIDA. Verifica que sea un CFDI timbrado correctamente e inténtalo de nuevo.</p>');
+$('#'+nombre).val("");
+
+
+
+}else if(resp.indexOf('6^^') === 0){
+
+
+
+var partesReceptor = resp.split('^^');
+
+
+
+var receptorXML = partesReceptor[1] ? $.trim(partesReceptor[1]) : '';
+
+
+
+var msgReceptor = receptorXML !== '' ? '⚠️ EL RECEPTOR DE LA FACTURA NO ES VÁLIDO ES: <strong style="color:#000000;">'+receptorXML+'</strong>. Debe ser EPC, INN o EVE520.' : '⚠️ EL RECEPTOR DE LA FACTURA NO ES EPC, INN O EVE520.';
+
+
+
+$('#1'+nombre).html('<p style="color:red;font-weight:600;">'+msgReceptor+'</p>');
+
+$('#'+nombre).val("");
+
+}else if(resp.indexOf('8^^') === 0){
+
+var partesProveedor = resp.split('^^');
+
+var emisorXML = partesProveedor[1] ? $.trim(partesProveedor[1]) : '';
+
+var proveedorRegistrado = partesProveedor[2] ? $.trim(partesProveedor[2]) : '';
+
+var detalleProveedor = '';
+
+if(emisorXML !== ''){
+	detalleProveedor += ' Proveedor del XML: <strong style="color:#000000;">'+emisorXML+'</strong>.';
+}
+
+if(proveedorRegistrado !== ''){
+	detalleProveedor += ' Proveedor registrado: <strong style="color:#000000;">'+proveedorRegistrado+'</strong>.';
+}
+
+$('#1'+nombre).html('<p style="color:red;font-weight:600;">⚠️ PROVEEDOR INCORRECTO. La razón social del emisor de la factura no coincide con la razón social fiscal registrada.'+detalleProveedor+'</p>');
+
 $('#'+nombre).val("");
 /*nuevo inicio*/
 
 }else{
-$('#'+nombre).val(response);
-$('#1'+nombre).html('<a target="_blank" href="includes/archivos/'+$.trim(response)+'"></a>');
+$('#'+nombre).val(resp);
+
+$('#1'+nombre).html('<a target="_blank" href="includes/archivos/'+resp+'"></a>');
+
 
 /*nuevo inicio*/
 $("#2ADJUNTAR_FACTURA_XML").load(location.href + " #2ADJUNTAR_FACTURA_XML");
@@ -172,10 +278,10 @@ $('#2IVA').load(location.href + ' #2IVA');
 		method:'POST',
 		data:{pasarD_text:pasarD_text,pasarDID:pasarDID},
 		beforeSend:function(){
-			$('#mensajeDATOSBANCARIOS12').html('cargando');
+			$('#mensajeDATOSBANCARIOS1').html('cargando');
 		},
 		success:function(data){
-			$('#mensajeDATOSBANCARIOS12').html("<span id='ACTUALIZADO' >"+data+"</span>").fadeIn().delay(2000).fadeOut(); 
+			$('#mensajeDATOSBANCARIOS1').html("<span id='ACTUALIZADO' >"+data+"</span>").fadeIn().delay(2000).fadeOut(); 
 			$('#resetBancario1p').load(location.href + ' #resetBancario1p');
 		}
 	});
@@ -307,18 +413,44 @@ $(document).keydown(function(event) {
 });
 
 $("#enviarSUBIRFACTURA").click(function(){
-        /*nuevo script pbajar archivos y datos*/
-const scrollPositionBeforeSubmit = $(window).scrollTop();
-const restoreScroll = () => {
-    $(window).scrollTop(scrollPositionBeforeSubmit);
+const mantenerMensajeSubirFacturaVisible = () => {
+
+    const mensaje = document.getElementById('mensajeSUBIRFACTURA');
+
+    if (mensaje) {
+
+        mensaje.scrollIntoView({ behavior: 'smooth', block: 'center' });
+
+    }
+
 };
-const numeroEventoInput = $("#NUMERO_EVENTO2");
-const numeroEvento = numeroEventoInput.val().trim();
+
+const mostrarMensajeSubirFactura = (html, tiempoVisible) => {
+
+    const $mensaje = $("#mensajeSUBIRFACTURA");
+
+    $mensaje.html(html).fadeIn();
+
+    mantenerMensajeSubirFacturaVisible();
+
+
+
+    if (tiempoVisible) {
+
+        $mensaje.delay(tiempoVisible).fadeOut();
+
+    }
+
+};
+const numeroEventoInput = $('input[name="NUMERO_EVENTO"]');
+const numeroEventoSanitizado = numeroEventoInput.val().replace(/\s+/g, '').trim();
+numeroEventoInput.val(numeroEventoSanitizado);
+const numeroEvento = numeroEventoSanitizado;
 const prefijosNumeroEvento = ["EPC", "INN", "EVE"];
 
 if (prefijosNumeroEvento.includes(numeroEvento.toUpperCase())) {
-        $("#mensajeSUBIRFACTURA").html("<span style='color:red;'>FAVOR DE COMPLETAR EL NÚMERO DE EVENTO AGREGANDO EL NÚMERO CORRESPONDIENTE DESPUÉS DE LAS INICIALES DE LA EMPRESA.</span>").fadeIn().delay(3000).fadeOut();
-        numeroEventoInput.focus();
+       mostrarMensajeSubirFactura("<span style='color:red;'>FAVOR DE COMPLETAR EL NÚMERO DE EVENTO AGREGANDO EL NÚMERO CORRESPONDIENTE DESPUÉS DE LAS INICIALES DE LA EMPRESA.</span>", 5000);
+
         return;
 }
 
@@ -339,9 +471,10 @@ $.ajax({
 			/*nuevo inicio*/
 
 	        $("#SUBIRFACTURAform")[0].reset(); //resetea formulario
-			$("#RAZON_SOCIAL").val(''); //borra valores vienen de PHP
+		
 			$("#CONCEPTO_PROVEE").val(''); //borra valores vienen de PHP
-			$("#RFC_PROVEEDOR").val(''); //borra valores vienen de PHP
+			$("#PFORMADE_PAGO").val(''); //borra valores vienen de PHP
+		
 			$("#TIPO_DE_MONEDA").val(''); //borra valores vienen de PHP
 			$("#FECHA_DE_PAGO").val(''); //borra valores vienen de PHP
 			$("#NUMERO_CONSECUTIVO_PROVEE").val(''); //borra valores vienen de PHP
@@ -365,6 +498,7 @@ $.ajax({
 			$("#2COMPROBANTE_DE_DEVOLUCION").load(location.href + " #2COMPROBANTE_DE_DEVOLUCION");
 			$("#IMPUESTO_HOSPEDAJE").load(location.href + " #IMPUESTO_HOSPEDAJE");
 			$("#MONTO_PROPINA").load(location.href + " #MONTO_PROPINA");
+			$("#2PFORMADE_PAGO").load(location.href + " #2PFORMADE_PAGO");
 
 			$("#IVA").load(location.href + " #IVA");
 			$("#A").load(location.href + " #A");
@@ -385,13 +519,15 @@ $.ajax({
 			$('#NUMERO_EVENTO2').load(location.href + ' #NUMERO_EVENTO2');
 			
 			
-			$("#mensajeSUBIRFACTURA").html("<span id='ACTUALIZADO' >"+data+"</span>").fadeIn().delay(3000).fadeOut();
+			mostrarMensajeSubirFactura("<span id='ACTUALIZADO' >"+data+"</span>", 3000);
+
             $('#resettabla').load(location.href + ' #resettabla');
 			
 			
 			$.getScript(load(1));
 			}else{
-			$("#mensajeSUBIRFACTURA").html(data).fadeIn().delay(5000).fadeOut();
+			mostrarMensajeSubirFactura(data, 5000);
+
 		}
 })
 .fail(function() {

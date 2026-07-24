@@ -251,7 +251,7 @@ document.addEventListener("DOMContentLoaded", function () {
 				
 				 
                  <tr  style="background: #d2faf1" > 
-                 <th scope="row"> <label for="validationCustom03" class="form-label">ADJUNTAR FACTURA(FORMATO &nbsp;<a style="color:red;font:12px">(XML)</a><</label></th>
+                 <th scope="row"> <label for="validationCustom03" class="form-label">ADJUNTAR FACTURA(FORMATO &nbsp;<a style="color:red;font:12px">(XML)</a></label></th>
                  <td>
 				 
 	
@@ -288,9 +288,10 @@ $url = '';
 
 
 
-	if (is_array($regreso) && isset($regreso['ADJUNTAR_FACTURA_XML'])) {
+if (is_array($regreso) && isset($regreso['ADJUNTAR_FACTURA_XML'])) {
 
 		$NUMERO_EVENTO = isset($regreso['NUMERO_EVENTO']) ? $regreso['NUMERO_EVENTO'] : '';
+		$FECHA_DE_PAGO = isset($regreso['FECHA_DE_PAGO']) ? $regreso['FECHA_DE_PAGO'] : '';
 
 		$url = __ROOT1__.'/includes/archivos/'.$regreso['ADJUNTAR_FACTURA_XML'];
 
@@ -353,7 +354,11 @@ if( $url && file_exists($url) ){
 	$fechaInicio=strtotime(date('Y-m-d'));
 	$FECHA_domingo = date('Y-m-d', strtotime('next monday', $fechaInicio));
 	$FECHA_jueves = date('Y-m-d', strtotime('next Thursday', strtotime($FECHA_domingo)));
-	$FECHA_DE_PAGO = $FECHA_jueves;//'2023-08-03';//. $conexion2->fechaEs($FECHA_jueves);
+	if(trim((string)$FECHA_DE_PAGO) === ''){
+		$FECHA_DE_PAGO = $FECHA_jueves;//'2023-08-03';//. $conexion2->fechaEs($FECHA_jueves);
+	}
+
+
 
 	/*nuevo*/
 	
@@ -370,6 +375,12 @@ $prefijosNumeroEvento = [
 if (isset($nombreR) && isset($prefijosNumeroEvento[$nombreR]) && trim((string)$NUMERO_EVENTO) === '') {
         $NUMERO_EVENTO = $prefijosNumeroEvento[$nombreR];
 }
+$bloquearCamposFacturaXml = ($url && file_exists($url));
+
+$atributosBloqueoFacturaXml = $bloquearCamposFacturaXml ? ' readonly="readonly" title="Campo bloqueado porque se llenó automáticamente desde la factura XML"' : '';
+
+$atributoSelectBloqueoFacturaXml = $bloquearCamposFacturaXml ? ' disabled="disabled" title="Campo bloqueado porque se llenó automáticamente desde la factura XML"' : '';
+
 
 ?></div>			 
 				 			 
@@ -436,7 +447,8 @@ while($rowsube=mysqli_fetch_array($listadosube)){
 				 </td>
                  </tr>
 
-			
+					<div id="FECHA_DE_PAGO2">
+							<input type="hidden" class="form-control" id="FECHA_DE_PAGO2" required="" value="<?php echo $FECHA_DE_PAGO; ?>" name="FECHA_DE_PAGO" placeholder="FECHA DE PAGO">
 
                  <tr  style="background:#fcf3cf"> 
                  <th scope="row"> <label for="validationCustom03" class="form-label">RFC DEL PROVEEDOR:</label></th>
@@ -507,7 +519,8 @@ while($rowsube=mysqli_fetch_array($listadosube)){
 <th scope="row"> <label for="validationCustom03" class="form-label">SUBTOTAL:</label></th>
 
 
- <td><div id="2MONTO_FACTURA"> <div class="input-group mb-3"> <span class="input-group-text">$</span> <input type="text"  style="width:300px;height:40px;"  id="MONTO_FACTURA" required="" onkeyup="calcular()"   value="<?php echo $subTotal; ?>" name="MONTO_FACTURA" class="total" placeholder="SUB TOTAL"></td>
+ <td><div id="2MONTO_FACTURA"> <div class="input-group mb-3"> <span class="input-group-text">$</span> <input type="text"  style="width:300px;height:40px;"  id="MONTO_FACTURA" required="" onkeyup="calcular()"   value="<?php echo $subTotal; ?>" name="MONTO_FACTURA" class="total" placeholder="SUB TOTAL"<?php echo $atributosBloqueoFacturaXml; ?>></td>
+
 </div></div>
 </td>
 </tr>
@@ -515,7 +528,8 @@ while($rowsube=mysqli_fetch_array($listadosube)){
             <tr style="background:#fcf3cf">
 
 <th scope="row"> <label for="validationCustom03" class="form-label">IVA:</label></th>
- <td><div id="2IVA"> <div class="input-group mb-3"> <span class="input-group-text">$</span> <input type="text"  style="width:300px;height:40px;"  id="total"  onkeyup="calcular()" value="<?php echo $TImpuestosTrasladados; ?>" name="IVA" class="total" placeholder="IVA"></td>
+ <td><div id="2IVA"> <div class="input-group mb-3"> <span class="input-group-text">$</span> <input type="text"  style="width:300px;height:40px;"  id="total"  onkeyup="calcular()" value="<?php echo $TImpuestosTrasladados; ?>" name="IVA" class="total" placeholder="IVA"<?php echo $atributosBloqueoFacturaXml; ?>></td>
+
 </div></div>
 </td>
 </tr>
@@ -524,7 +538,8 @@ while($rowsube=mysqli_fetch_array($listadosube)){
             <th scope="row"> <label  style="width:300px" for="validationCustom03" class="form-label">IMPUESTOS RETENIDOS &nbsp;<a style="color:red;font:12px">(IVA)</a></label></th>               				 
 				 <td> 				 
 				<div id="2TImpuestosRetenidosIVA">			 
-     <div class="input-group mb-3"> <span class="input-group-text">$</span> <input type="text"  style="width:300px;height:40px;"  id="TImpuestosRetenidosIVA" required=""    name="TImpuestosRetenidosIVA"  value="<?php echo $impueRdesglosado002; ?>" class="total" placeholder="IMPUESTOS RETENIDOS IVA">
+       <div class="input-group mb-3"> <span class="input-group-text">$</span> <input type="text"  style="width:300px;height:40px;"  id="TImpuestosRetenidosIVA" required=""    name="TImpuestosRetenidosIVA"  value="<?php echo $impueRdesglosado002; ?>" class="total" placeholder="IMPUESTOS RETENIDOS IVA"<?php echo $atributosBloqueoFacturaXml; ?>>
+
 				
 				</div></div>
 				 </td>
@@ -535,7 +550,8 @@ while($rowsube=mysqli_fetch_array($listadosube)){
             <th scope="row"> <label  style="width:300px" for="validationCustom03" class="form-label">IMPUESTOS RETENIDOS &nbsp;<a style="color:red;font:12px">(ISR)</a></label></th>               				 
 				 <td> 				 
 				<div id="2TImpuestosRetenidosISR">			 
-     <div class="input-group mb-3"> <span class="input-group-text">$</span> <input type="text"  style="width:300px;height:40px;"  id="TImpuestosRetenidosISR" required=""    name="TImpuestosRetenidosISR"  value="<?php echo $impueRdesglosado001; ?>" class="total" placeholder="IMPUESTOS RETENIDOS ISR">
+   <div class="input-group mb-3"> <span class="input-group-text">$</span> <input type="text"  style="width:300px;height:40px;"  id="TImpuestosRetenidosISR" required=""    name="TImpuestosRetenidosISR"  value="<?php echo $impueRdesglosado001; ?>" class="total" placeholder="IMPUESTOS RETENIDOS ISR"<?php echo $atributosBloqueoFacturaXml; ?>>
+
 				
 				</div></div>
 				 </td>
@@ -562,7 +578,8 @@ while($rowsube=mysqli_fetch_array($listadosube)){
             <th scope="row"> <label  style="width:300px" for="validationCustom03" class="form-label">DESCUENTO:</label></th>               				 
 				 <td> 				 
 				<div id="2descuentos">			 
-     <div class="input-group mb-3"> <span class="input-group-text">$</span> <input type="text"  style="width:300px;height:40px;"  id="descuentos" required=""    name="descuentos"  value="<?php echo $Descuento; ?>" class="total" placeholder="DESCUENTO">
+       <div class="input-group mb-3"> <span class="input-group-text">$</span> <input type="text"  style="width:300px;height:40px;"  id="descuentos" required=""    name="descuentos"  value="<?php echo $Descuento; ?>" class="total" placeholder="DESCUENTO"<?php echo $atributosBloqueoFacturaXml; ?>>
+
 				
 				</div></div>
 				 </td>
@@ -603,8 +620,10 @@ while($rowsube=mysqli_fetch_array($listadosube)){
                  <th scope="row"> <label for="validationCustom03" class="form-label">TIPO DE MONEDA O DIVISA:</label></th>
               
 				
-				            
-             <td> <div id="TIPO_DE_MONEDA2"><select class="form-select mb-3" aria-label="Default select example" id="validationCustom02" required="" name="TIPO_DE_MONEDA"  > 
+	       <td> <div id="TIPO_DE_MONEDA2"><?php if($bloquearCamposFacturaXml){ ?><input type="hidden" name="TIPO_DE_MONEDA" value="<?php echo $Moneda; ?>"><?php } ?>
+
+             <select class="form-select mb-3" aria-label="Default select example" id="validationCustom02" required="" name="TIPO_DE_MONEDA"<?php echo $atributoSelectBloqueoFacturaXml; ?>  > 
+ 
                          <option style="background: #c9e8e8" value="MXN" <?php if($Moneda=='MXN'){echo "selected";} ?>>MXN (Peso mexicano)</option>
                          <option style="background: #a3e4d7" value="USD" <?php if($Moneda=='USD'){echo "selected";} ?>>USD (Dolar)</option>
                          <option style="background: #e8f6f3" value="EUR" <?php if($Moneda=='EUR'){echo "selected";} ?>>EUR (Euro)</option>
@@ -637,11 +656,14 @@ while($rowsube=mysqli_fetch_array($listadosube)){
 
 
 
-       <select name="PFORMADE_PAGO"  class="form-select mb-3"  id="validationCustom02" aria-label="Default select example">
+     <?php if($bloquearCamposFacturaXml){ ?><input type="hidden" name="PFORMADE_PAGO" value="<?php echo $formaDePago; ?>"><?php } ?>
+
+       <select name="PFORMADE_PAGO"  class="form-select mb-3"  id="validationCustom02" aria-label="Default select example"<?php echo $atributoSelectBloqueoFacturaXml; ?>>
+
                   
 					<script type="text/javascript">  function EFECTIVO (texto) {    alert(texto);} </script>
                    
-				 <option style="background:#f2b4f5"  name="PFORMADE_PAGO" value="03">03 TRANSFERENCIA ELECTRONICA DE FONDOS</option>	
+					
 		     <option style="background:#f2b4f5"  <?php if($formaDePago=='03'){echo "selected";} ?> value="03" name="PFORMADE_PAGO">03 TRANSFERENCIA ELECTRONICA DE FONDOS</option>	
 					
 					
@@ -733,12 +755,12 @@ while($rowsube=mysqli_fetch_array($listadosube)){
 	?></div>	
 
 				 </td> </tr>-->
-
+ <input type="hidden" style="width:200px;" class="form-control" id="validationCustom03" value="<?php echo date('d-m-Y H:i:s'); ?>" name="FECHA_DE_LLENADO">
          
- <input type="hidden" style="width:200px;" class="form-control" id="validationCustom03" value="<?php echo date('Y-m-d H:i:s'); ?>" name="FECHA_DE_LLENADO">
+  <input type="hidden" id="FECHA_DE_PAGO" name="FECHA_DE_PAGO" value="<?php echo $FECHA_DE_PAGO; ?>">
          <input type="hidden" name="hiddensubefactura" value="hiddensubefactura">
 		 
-         <input type="hidden" name="FECHA_DE_PAGO" value="<?php echo $FECHA_DE_PAGO; ?>">
+         
               
          	
  

@@ -12,6 +12,73 @@ $SUBEFACTURA = NEW accesoclase();
 $conexion = NEW colaboradores();
 $conexion2 = new herramientas();
 
+if(!function_exists('normalizarTextoEmpresaSB')){
+
+	function normalizarTextoEmpresaSB($texto){
+
+		$texto = mb_strtoupper(trim((string)$texto), 'UTF-8');
+
+		$texto = preg_replace('/\s+/', ' ', $texto);
+
+		return $texto;
+
+	}
+
+}
+
+
+
+if(!function_exists('obtenerRazonSocialProveedorSB')){
+	function obtenerRazonSocialProveedorSB($conexion, $idPROV){
+		$idPROV = trim((string)$idPROV);
+		if($idPROV === ''){ return ''; }
+
+		$conn = $conexion->db();
+		$idPROVEscapado = mysqli_real_escape_string($conn, $idPROV);
+		$consulta = "SELECT P_NOMBRE_FISCAL_RS_EMPRESA FROM 02direccionproveedor1 WHERE idRelacion = '".$idPROVEscapado."' LIMIT 1";
+		$resultado = mysqli_query($conn, $consulta);
+
+		if($resultado && ($row = mysqli_fetch_array($resultado, MYSQLI_ASSOC))){
+			return isset($row['P_NOMBRE_FISCAL_RS_EMPRESA']) ? trim((string)$row['P_NOMBRE_FISCAL_RS_EMPRESA']) : '';
+		}
+
+		return '';
+	}
+}
+
+if(!function_exists('esProveedorCorrectoFacturaSB')){
+	function esProveedorCorrectoFacturaSB($nombreEmisorXml, $razonSocialProveedor){
+		$nombreEmisorXml = normalizarTextoEmpresaSB($nombreEmisorXml);
+		$razonSocialProveedor = normalizarTextoEmpresaSB($razonSocialProveedor);
+
+		return $nombreEmisorXml !== '' && $razonSocialProveedor !== '' && $nombreEmisorXml === $razonSocialProveedor;
+	}
+}
+
+
+
+if(!function_exists('esReceptorCorporativoSB')){
+
+	function esReceptorCorporativoSB($nombreReceptor){
+
+		$nombreNormalizado = normalizarTextoEmpresaSB($nombreReceptor);
+
+		$empresasCorporativo = array(
+
+			normalizarTextoEmpresaSB('EVENTOS PROMOCIONES Y CONVENCIONES'),
+
+			normalizarTextoEmpresaSB('INNOVA CONGRESOS Y CONVENCIONES'),
+
+			normalizarTextoEmpresaSB('EVENTOS 520')
+
+		);
+
+				return $nombreNormalizado !== '' && in_array($nombreNormalizado, $empresasCorporativo, true);
+
+
+	}
+
+}
 
 $hiddensubefactura = isset($_POST["hiddensubefactura"])?$_POST["hiddensubefactura"]:"";
 $validaDATOSBANCARIOS1 = isset($_POST["validaDATOSBANCARIOS1"])?$_POST["validaDATOSBANCARIOS1"]:"";
@@ -192,9 +259,30 @@ $prefijosNumeroEvento = array('EPC','INN','EVE');
 
 if(in_array(strtoupper(trim($NUMERO_EVENTO)),$prefijosNumeroEvento)){
         echo "<P style='color:red; font-size:23px;'>FAVOR DE COMPLETAR EL NÚMERO DE EVENTO AGREGANDO EL NÚMERO CORRESPONDIENTE DESPUÉS DE LAS INICIALES DE LA EMPRESA SIN ESPACIOS.</p>";
-}elseif($NOMBRE_COMERCIAL == "" or  $NUMERO_EVENTO == "" or  $NOMBRE_DEL_EJECUTIVO == "" or  $MONTO_TOTAL_COTIZACION_ADEUDO == ""){
-echo "<P style='color:red; font-size:23px;'>FAVOR DE LLENAR TODOS LOS CAMPOS OBLIGATORIOS</p>";
-}else{
+			exit;
+
+}
+
+elseif($NOMBRE_COMERCIAL == "" or $NUMERO_EVENTO == "" or $NOMBRE_DEL_EJECUTIVO == "" or $MONTO_TOTAL_COTIZACION_ADEUDO == ""){
+    
+    $campos = array(
+        "NOMBRE COMERCIAL" => $NOMBRE_COMERCIAL,
+        "NUMERO DE EVENTO" => $NUMERO_EVENTO,
+        "NOMBRE DEL EJECUTIVO" => $NOMBRE_DEL_EJECUTIVO,
+        "MONTO TOTAL COTIZACION/ADEUDO" => $MONTO_TOTAL_COTIZACION_ADEUDO
+    );
+    
+    foreach($campos as $nombre => $valor){
+        if($valor == ""){
+            echo "<p style='color:red; font-size:23px;'>FAVOR DE LLENAR EL CAMPO: $nombre</p>";
+        }
+    }
+    
+    exit;
+}
+
+
+else{
 
 
 	echo $SUBEFACTURA->lectorxmlX ($NUMERO_CONSECUTIVO_PROVEE , $NOMBRE_COMERCIAL , $RAZON_SOCIAL ,$VIATICOSOPRO, $RFC_PROVEEDOR , $NUMERO_EVENTO , $NOMBRE_EVENTO , $CONCEPTO_PROVEE , $MONTO_TOTAL_COTIZACION_ADEUDO , $MONTO_DEPOSITAR , $MONTO_PROPINA , $MONTO_FACTURA , $TIPO_DE_MONEDA ,$PFORMADE_PAGO, $FECHA_DE_PAGO , $STATUS_DE_PAGO , $NOMBRE_DEL_EJECUTIVO , $OBSERVACIONES_1 ,$FECHA_DE_LLENADO, $ADJUNTAR_FACTURA_XML , $ADJUNTAR_FACTURA_PDF, $ADJUNTAR_COTIZACION11, $CONPROBANTE_TRANSFERENCIA, $ADJUNTAR_ARCHIVO_1,$IMPUESTO_HOSPEDAJE, $MONTO_DEPOSITADO,$PENDIENTE_PAGO,$IVA,$NOMBRE_DEL_AYUDO,$TImpuestosRetenidosIVA,$TImpuestosRetenidosISR,$descuentos,$hiddensubefactura, $ENVIARRSB1p, $IPSB1p);
@@ -320,13 +408,67 @@ elseif($borrasbdoc =='borrasbdoc'){
 	$borra_id_sb = isset($_POST["borra_id_sb"])?$_POST["borra_id_sb"]:"";   
 	
 		echo  $SUBEFACTURA->delete_subefacturadocto2($borra_id_sb);
+			$SUBEFACTURA->registrar_bitacora_sb('eliminar', 'Se eliminó un documento temporal en 02SUBETUFACTURADOCTOS', $borra_id_sb, '02SUBETUFACTURADOCTOS');
+
 }
 
 
 $idPROV = isset($_SESSION["idPROV"])?$_SESSION["idPROV"]:"";
 $IPSB1p = isset($_POST["IPSB1p"])?$_POST["IPSB1p"]:"";
+$camposArchivoSB = array('ADJUNTAR_FACTURA_PDF','ADJUNTAR_FACTURA_XML','ADJUNTAR_COTIZACION','ACUSE_CANCELACION','CONPROBANTE_TRANSFERENCIA','ADJUNTAR_ARCHIVO_1');
 
-if( $IPSB1p != '' and ($_FILES["ADJUNTAR_FACTURA_PDF"] == true or $_FILES["ADJUNTAR_FACTURA_XML"] == true or  $_FILES["ADJUNTAR_COTIZACION"] == true  or  $_FILES["CONPROBANTE_TRANSFERENCIA"] == true  or  $_FILES["ADJUNTAR_ARCHIVO_1"] == true )) {
+foreach($camposArchivoSB as $campoArchivoSB){
+
+	if(isset($_FILES[$campoArchivoSB]) && is_array($_FILES[$campoArchivoSB]) && isset($_FILES[$campoArchivoSB]['error']) && intval($_FILES[$campoArchivoSB]['error']) !== UPLOAD_ERR_OK && intval($_FILES[$campoArchivoSB]['error']) !== UPLOAD_ERR_NO_FILE){
+
+
+		echo 'ERROR_SUBIDA^^'.$campoArchivoSB;
+
+		exit;
+
+	}
+
+	if(isset($_FILES[$campoArchivoSB]) && is_array($_FILES[$campoArchivoSB]) && isset($_FILES[$campoArchivoSB]['error']) && intval($_FILES[$campoArchivoSB]['error']) === 0){
+
+		if(isset($_FILES[$campoArchivoSB]['size']) && intval($_FILES[$campoArchivoSB]['size']) === 0){
+
+			echo 'VACIO^^'.$campoArchivoSB;
+
+			exit;
+
+		}
+
+		$extensionSB = strtolower(pathinfo(isset($_FILES[$campoArchivoSB]['name']) ? $_FILES[$campoArchivoSB]['name'] : '', PATHINFO_EXTENSION));
+
+		if($extensionSB === ''){
+
+			echo 'SIN_EXTENSION^^'.$campoArchivoSB;
+
+			exit;
+
+		}
+
+		if($campoArchivoSB === 'ADJUNTAR_FACTURA_XML' && $extensionSB !== 'xml'){
+
+			echo '2';
+
+			exit;
+
+		}
+
+		if($campoArchivoSB === 'ADJUNTAR_FACTURA_PDF' && $extensionSB !== 'pdf'){
+
+			echo '2';
+
+			exit;
+
+		}
+
+	}
+
+}
+
+if( $IPSB1p != '' and ($_FILES["ADJUNTAR_FACTURA_PDF"] == true or $_FILES["ADJUNTAR_FACTURA_XML"] == true or  $_FILES["ADJUNTAR_COTIZACION"] true or  $_FILES["ACUSE_CANCELACION"] == true  or  $_FILES["CONPROBANTE_TRANSFERENCIA"] == true  or  $_FILES["ADJUNTAR_ARCHIVO_1"] == true )) {
 if($idPROV != ''){
 
 foreach($_FILES AS $ETQIETA => $VALOR){
@@ -336,23 +478,120 @@ foreach($_FILES AS $ETQIETA => $VALOR){
 	$url = __ROOT1__.'/includes/archivos/'.$ADJUNTAR_FACTURA_XML;
 	if( file_exists($url) ){
 		$regreso = $conexion2->lectorxml($url);
+		if(empty($regreso) || !isset($regreso['UUID']) || trim($regreso['UUID']) === ''){
+
+			echo '5^^ADJUNTAR_FACTURA_XML';
+
+			UNLINK($url);
+
+			$SUBEFACTURA->delete_subefactura2nombre($ADJUNTAR_FACTURA_XML);
+
+			exit;
+
+		}
+
+
+
+		$nombreRxml = isset($regreso['nombreR']) ? trim((string)$regreso['nombreR']) : '';
+
+			if(!esReceptorCorporativoSB($nombreRxml)){
+
+
+
+
+			echo '6^^'.$nombreRxml;
+
+
+
+			UNLINK($url);
+
+
+
+			$SUBEFACTURA->delete_subefactura2nombre($ADJUNTAR_FACTURA_XML);
+
+
+
+			exit;
+
+
+
+		}
+			$nombreRxml = isset($regreso['nombreR']) ? trim((string)$regreso['nombreR']) : '';
+
+
+
+		if(!esReceptorCorporativoSB($nombreRxml)){
+
+
+
+			echo '6^^'.$nombreRxml;
+
+
+
+			UNLINK($url);
+
+
+
+			$SUBEFACTURA->delete_subefactura2nombre($ADJUNTAR_FACTURA_XML);
+
+
+
+			exit;
+
+
+
+
+		}
+
+
+		$nombreEmisorXml = isset($regreso['nombreE']) ? trim((string)$regreso['nombreE']) : '';
+		$razonSocialProveedor = obtenerRazonSocialProveedorSB($SUBEFACTURA, $idPROV);
+
+		if(!esProveedorCorrectoFacturaSB($nombreEmisorXml, $razonSocialProveedor)){
+			echo '8^^'.$nombreEmisorXml.'^^'.$razonSocialProveedor;
+
+			UNLINK($url);
+
+			$SUBEFACTURA->delete_subefactura2nombre($ADJUNTAR_FACTURA_XML);
+
+			exit;
+		}
+
+
+
 		$resultado = $SUBEFACTURA->VALIDA02XMLUUID($regreso['UUID']);
 		if($resultado == 'S'){
+			$SUBEFACTURA->reemplazar_factura_unica('ADJUNTAR_FACTURA_XML', $idPROV, $IPSB1p, $ADJUNTAR_FACTURA_XML, __ROOT1__.'/includes/archivos/');
+
 			echo $ADJUNTAR_FACTURA_XML;
 		}else{
-			echo '3';
+			echo $resultado;
+
 			UNLINK($url);
 			$SUBEFACTURA->delete_subefactura2nombre($ADJUNTAR_FACTURA_XML);
 		}
 	}
-}else{echo $ADJUNTAR_FACTURA_XML;}
+}else{
+
+	if($ETQIETA === 'ADJUNTAR_FACTURA_PDF'){
+
+		$SUBEFACTURA->reemplazar_factura_unica('ADJUNTAR_FACTURA_PDF', $idPROV, $IPSB1p, $ADJUNTAR_FACTURA_XML, __ROOT1__.'/includes/archivos/');
+
+	}
+
+	echo $ADJUNTAR_FACTURA_XML;
+
+}
+
+$SUBEFACTURA->registrar_bitacora_sb('adjuntar', 'Se adjuntó/actualizó un documento en 02SUBETUFACTURADOCTOS', $IPSB1p, '02SUBETUFACTURADOCTOS');
+
 }
 
 }else{	echo "no hay usuario seleccionado";}
 
 }
 
-if(  $IPSB1p == '' and $hiddensubefactura!= 'hiddensubefactura' and ($_FILES["ADJUNTAR_FACTURA_PDF"] == true or $_FILES["ADJUNTAR_FACTURA_XML"] == true or  $_FILES["ADJUNTAR_COTIZACION"] == true  or  $_FILES["CONPROBANTE_TRANSFERENCIA"] == true  or  $_FILES["ADJUNTAR_ARCHIVO_1"] == true )) {
+if(  $IPSB1p == '' and $hiddensubefactura!= 'hiddensubefactura' and ($_FILES["ADJUNTAR_FACTURA_PDF"] == true or $_FILES["ADJUNTAR_FACTURA_XML"] == true or  $_FILES["ADJUNTAR_COTIZACION"] true or  $_FILES["ACUSE_CANCELACION"] == true  or  $_FILES["CONPROBANTE_TRANSFERENCIA"] == true  or  $_FILES["ADJUNTAR_ARCHIVO_1"] == true )) {
 if($idPROV != ''){
 
 foreach($_FILES AS $ETQIETA => $VALOR){
@@ -363,16 +602,136 @@ foreach($_FILES AS $ETQIETA => $VALOR){
 	$url = __ROOT1__.'/includes/archivos/'.$ADJUNTAR_FACTURA_XML;
 	if( file_exists($url) ){
 		$regreso = $conexion2->lectorxml($url);
-		$resultado = $SUBEFACTURA->VALIDA02XMLUUID($regreso['UUID']);
+		if(empty($regreso) || !isset($regreso['UUID']) || trim($regreso['UUID']) === ''){
+
+			echo '5^^ADJUNTAR_FACTURA_XML';
+
+			UNLINK($url);
+
+			$SUBEFACTURA->delete_subefactura2nombre($ADJUNTAR_FACTURA_XML);
+
+			exit;
+
+		}
+		$nombreRxml = isset($regreso['nombreR']) ? trim((string)$regreso['nombreR']) : '';
+
+
+
+		if(!esReceptorCorporativoSB($nombreRxml)){
+
+
+
+			echo '6^^'.$nombreRxml;
+
+
+
+			UNLINK($url);
+
+
+
+			$SUBEFACTURA->delete_subefactura2nombre($ADJUNTAR_FACTURA_XML);
+
+
+
+			exit;
+
+
+
+		}
+$nombreRxml = isset($regreso['nombreR']) ? trim((string)$regreso['nombreR']) : '';
+
+
+
+		if(!esReceptorCorporativoSB($nombreRxml)){
+
+
+
+			echo '6^^'.$nombreRxml;
+
+
+
+			UNLINK($url);
+
+
+
+			$SUBEFACTURA->delete_subefactura2nombre($ADJUNTAR_FACTURA_XML);
+
+
+
+			exit;
+
+
+
+		}
+		$nombreRxml = isset($regreso['nombreR']) ? trim((string)$regreso['nombreR']) : '';
+
+
+
+		if(!esReceptorCorporativoSB($nombreRxml)){
+
+
+
+			echo '6^^'.$nombreRxml;
+
+
+
+			UNLINK($url);
+
+
+
+			$SUBEFACTURA->delete_subefactura2nombre($ADJUNTAR_FACTURA_XML);
+
+
+
+			exit;
+
+
+
+}
+
+
+		$nombreEmisorXml = isset($regreso['nombreE']) ? trim((string)$regreso['nombreE']) : '';
+		$razonSocialProveedor = obtenerRazonSocialProveedorSB($SUBEFACTURA, $idPROV);
+
+		if(!esProveedorCorrectoFacturaSB($nombreEmisorXml, $razonSocialProveedor)){
+			echo '8^^'.$nombreEmisorXml.'^^'.$razonSocialProveedor;
+
+			UNLINK($url);
+
+			$SUBEFACTURA->delete_subefactura2nombre($ADJUNTAR_FACTURA_XML);
+
+			exit;
+		}
+
+
+		$resultado = $SUBEFACTURA->VALIDA02XMLUUID($regreso['UUID']);;
 		if($resultado == 'S'){
+				$SUBEFACTURA->reemplazar_factura_unica('ADJUNTAR_FACTURA_XML', $idPROV, 'si', $ADJUNTAR_FACTURA_XML, __ROOT1__.'/includes/archivos/');
+
 			echo $ADJUNTAR_FACTURA_XML;
 		}else{
-			echo '3';
+			echo $resultado;
+
 			UNLINK($url);
 			$SUBEFACTURA->delete_subefactura2nombre($ADJUNTAR_FACTURA_XML);
 		}
 	}
-}else{echo $ADJUNTAR_FACTURA_XML;}
+}else{
+
+	if($ETQIETA === 'ADJUNTAR_FACTURA_PDF'){
+
+		$SUBEFACTURA->reemplazar_factura_unica('ADJUNTAR_FACTURA_PDF', $idPROV, 'si', $ADJUNTAR_FACTURA_XML, __ROOT1__.'/includes/archivos/');
+
+	}
+
+	echo $ADJUNTAR_FACTURA_XML;
+
+}
+
+
+
+	$SUBEFACTURA->registrar_bitacora_sb('adjuntar', 'Se adjuntó un documento temporal en 02SUBETUFACTURADOCTOS', 'si', '02SUBETUFACTURADOCTOS');
+
 
 
 
