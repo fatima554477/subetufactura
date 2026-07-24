@@ -1431,29 +1431,20 @@ $totales2 = 'si';
 	
 	?></td>
 <?php } ?>
- <td class="text-center align-middle">
-
+<td class="text-center align-middle">
 <?php if ($row['STATUS_DE_PAGO'] === 'RECHAZADO') { ?>
-
     <button type="button" class="btn btn-sm btn-outline-danger mb-1 view_documento_pago"
-
             data-id="<?php echo (int) $row['02SUBETUFACTURAid']; ?>"
-
             data-documento-tipo="acuse_cancelacion">SUBIR ACUSE DE CANCELACIÓN</button><br>
-
-<?php } ?></td><td>
-
-<?php if (trim((string) $row['PFORMADE_PAGO']) !== '03') { ?>
-
-    <button type="button" class="btn btn-sm btn-outline-primary view_documento_pago"
-
-            data-id="<?php echo (int) $row['02SUBETUFACTURAid']; ?>"
-
-            data-documento-tipo="complemento_pago">SUBIR COMPLEMENTO DE PAGO</button>
-
 <?php } ?>
-
+<?php if (trim((string) $row['PFORMADE_PAGO']) !== '03') { ?>
+    <button type="button" class="btn btn-sm btn-outline-primary view_documento_pago"
+            data-id="<?php echo (int) $row['02SUBETUFACTURAid']; ?>"
+            data-documento-tipo="complemento_pago">SUBIR COMPLEMENTO DE PAGO</button>
+<?php } ?>
 </td>
+
+
 
  
  
