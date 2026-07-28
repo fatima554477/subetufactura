@@ -104,6 +104,16 @@ $ENVIAR_EMAIL_DOCUFISCAL = isset($_POST["ENVIAR_EMAIL_DOCUFISCAL"])?$_POST["ENVI
 
 $action = isset($_POST["action"])?$_POST["action"]:"";
 
+/* Limpia únicamente las facturas que quedaron temporales al reiniciar la vista. */
+if($action === 'limpiar_facturas_temporales'){
+	$idProveedor = isset($_SESSION['idPROV']) ? (string)$_SESSION['idPROV'] : '';
+	if($idProveedor === ''){ http_response_code(403); exit; }
+	$SUBEFACTURA->eliminar_facturas_temporales($idProveedor);
+	exit;
+}
+
+
+
 /* Carga AJAX de acuses y complementos desde el listado de facturas. */
 if(in_array($action, array('documentos_pago_info', 'documentos_pago_guardar', 'documentos_pago_eliminar'), true)){
 	header('Content-Type: application/json; charset=utf-8');

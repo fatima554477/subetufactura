@@ -429,7 +429,7 @@ while($rowsube=mysqli_fetch_array($listadosube)){
 				 </td>
                  </tr>
 				 
-				 <tr style="background: #d2faf1"> 
+				 <tr style="background: #fcf3cf"> 
                  <th scope="row"> <label for="validationCustom03" class="form-label">NOMBRE COMERCIAL<br><a style="color:red;font-size:11px">OBLIGATORIO</a></label></th>
                  <td>
 				 <div >
@@ -557,7 +557,7 @@ while($rowsube=mysqli_fetch_array($listadosube)){
 				 </td>
                  </tr>
 
-<tr style="background:#fcf3cf">
+<tr style="background:#d2faf1">
 
 <th scope="row"> <label  style="width:300px" for="validationCustom03" class="form-label"><a style="color:red;font:12px">FAVOR DE PONER EL:&nbsp;</a>MONTO DE LA PROPINA O SERVICIO ESTÉ INCLUIDO O NO EN LA FACTURA</label></th>
 
@@ -698,7 +698,7 @@ while($rowsube=mysqli_fetch_array($listadosube)){
         </tr>
          
                
-                 <tr style="background: #d2faf1" > 
+                 <tr style="background: #fcf3cf" > 
                  <th scope="row">  <label for="validationCustom02" class="form-label">STATUS DE PAGO:</label></th>
                  <td>
 				 
@@ -715,7 +715,7 @@ while($rowsube=mysqli_fetch_array($listadosube)){
                  <th scope="row"> <label for="validationCustom03" class="form-label">NOMBRE DEL EJECUTIVO QUE SOLICITO O REALIZÓ LA COMPRA:<br><a style="color:red;font-size:11px">OBLIGATORIO</a></label></th>
                  <td><input type="text" class="form-control" id="validationCustom03" required=""  value="<?php echo $NOMBRE_DEL_EJECUTIVO; ?>" name="NOMBRE_DEL_EJECUTIVO"placeholder="NOMBRE DEL EJECUTIVO"></td>
                  </tr>
-				 <tr style="background: #d2faf1">
+				 <tr style="background:#fcf3cf">
 				 				<th scope="row">
 					<label for="validationCustom03" class="form-label">NOMBRE DEL QUE  INGRESO ESTA FACTURA:</label>
 				</th>

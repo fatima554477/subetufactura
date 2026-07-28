@@ -257,9 +257,18 @@ $('#2IVA').load(location.href + ' #2IVA');
 }
 	            }
 	        });
-	    }
+}
 	}
-   function cuentaDver(pasarDID){
+
+	// Al recargar o salir de SUBIR_FACTURA, elimina sólo las facturas que
+	// quedaron en estado temporal para que no aparezcan en la siguiente captura.
+	window.addEventListener('pagehide', function() {
+		if(navigator.sendBeacon){
+			var datos = new URLSearchParams({action: 'limpiar_facturas_temporales'});
+			navigator.sendBeacon('subirfactura/controladorSB.php', datos);
+		}
+	});
+	   function cuentaDver(pasarDID){
 
     $('.only-one').on('change', function() {
         $('.only-one').not(this).prop('checked', false);  

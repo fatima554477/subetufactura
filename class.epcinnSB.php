@@ -949,9 +949,49 @@ public function solocargartemp($archivo) {
 			"DELETE FROM ".$tabla2." WHERE `idTemporal` = '".$id."'
 			and ADJUNTAR_FACTURA_PDF <> '".$nombrearchivo."' and ADJUNTAR_FACTURA_PDF <>''")
 			or die('P44'.mysqli_error($conn));
+}
+
+	/**
+	 * Elimina las facturas temporales que el proveedor dejó cargadas antes de
+	 * enviar la solicitud. Los demás documentos temporales se conservan.
+	 */
+	public function eliminar_facturas_temporales($idRelacion){
+		$conn = $this->db();
+		$idRelacion = (string)$idRelacion;
+
+		$stmt = mysqli_prepare($conn, 'SELECT ADJUNTAR_FACTURA_XML, ADJUNTAR_FACTURA_PDF FROM 02SUBETUFACTURADOCTOS WHERE idRelacion = ? AND idTemporal = \'si\'');
+		if(!$stmt){ return false; }
+		mysqli_stmt_bind_param($stmt, 's', $idRelacion);
+		if(!mysqli_stmt_execute($stmt)){
+			mysqli_stmt_close($stmt);
+			return false;
+		}
+		mysqli_stmt_bind_result($stmt, $archivoXml, $archivoPdf);
+		$archivos = array();
+		while(mysqli_stmt_fetch($stmt)){
+			foreach(array($archivoXml, $archivoPdf) as $archivo){
+				$archivo = basename(trim((string)$archivo));
+				if($archivo !== ''){ $archivos[$archivo] = true; }
+			}
+		}
+		mysqli_stmt_close($stmt);
+
+		$stmt = mysqli_prepare($conn, "UPDATE 02SUBETUFACTURADOCTOS SET ADJUNTAR_FACTURA_XML = NULL, ADJUNTAR_FACTURA_PDF = NULL WHERE idRelacion = ? AND idTemporal = 'si'");
+		if(!$stmt){ return false; }
+		mysqli_stmt_bind_param($stmt, 's', $idRelacion);
+		$actualizado = mysqli_stmt_execute($stmt);
+		mysqli_stmt_close($stmt);
+		if(!$actualizado){ return false; }
+
+		foreach(array_keys($archivos) as $archivo){
+			$ruta = __ROOT3__.'/includes/archivos/'.$archivo;
+			if(is_file($ruta)){ unlink($ruta); }
+		}
+
+		return true;
 	}
-	
-	
+
+
 	public function reemplazar_factura_unica($campo, $idRelacion, $idTemporal, $nombrearchivo, $ruta){
 
 		$conn = $this->db();
