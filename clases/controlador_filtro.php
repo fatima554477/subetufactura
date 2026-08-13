@@ -1194,13 +1194,16 @@ $MONTO_DEPOSITAR12 += $row['MONTO_DEPOSITAR']; $colspan2 += 1;
  
 <?php  if($database->plantilla_filtro($nombreTabla,"OBSERVACIONES_1",$altaeventos,$DEPARTAMENTO)=="si"){ ?><td style="text-align:center"><?php echo $row['OBSERVACIONES_1']; $colspan2 += 1;?></td>
 <?php } ?>
-<?php  if($database->plantilla_filtro($nombreTabla,"ACUSE_CANCELACION",$altaeventos,$DEPARTAMENTO)=="si"){ ?><td style="text-align:center"><?php echo $ACUSE_CANCELACION; $colspan2 += 1; ?></td>
+
+
+<?php  if($database->plantilla_filtro($nombreTabla,"ACUSE_CANCELACION",$altaeventos,$DEPARTAMENTO)=="si"){ ?><td style="text-align:center" data-doc-cell="acuse_cancelacion" data-id="<?php echo (int) $row['02SUBETUFACTURAid']; ?>"><?php echo $ACUSE_CANCELACION; $colspan2 += 1; ?></td>
 <?php } ?>
 
-<?php  if($database->plantilla_filtro($nombreTabla,"COMPLEMENTOS_PAGO_XML",$altaeventos,$DEPARTAMENTO)=="si"){ ?><td style="text-align:center"><?php echo $COMPLEMENTOS_PAGO_XML; $colspan2 += 1; ?></td>
+
+<?php  if($database->plantilla_filtro($nombreTabla,"COMPLEMENTOS_PAGO_XML",$altaeventos,$DEPARTAMENTO)=="si"){ ?><td style="text-align:center" data-doc-cell="complemento_pago" data-id="<?php echo (int) $row['02SUBETUFACTURAid']; ?>"><?php echo $COMPLEMENTOS_PAGO_XML; $colspan2 += 1; ?></td>
 <?php } ?>
 
-<?php  if($database->plantilla_filtro($nombreTabla,"COMPLEMENTOS_PAGO_PDF",$altaeventos,$DEPARTAMENTO)=="si"){ ?><td style="text-align:center"><?php echo $COMPLEMENTOS_PAGO_PDF; $colspan2 += 1; ?></td>
+<?php  if($database->plantilla_filtro($nombreTabla,"COMPLEMENTOS_PAGO_PDF",$altaeventos,$DEPARTAMENTO)=="si"){ ?><td style="text-align:center" data-doc-cell="complemento_pago" data-id="<?php echo (int) $row['02SUBETUFACTURAid']; ?>"><?php echo $COMPLEMENTOS_PAGO_PDF; $colspan2 += 1; ?></td>
 <?php } ?>
 
 
@@ -1430,14 +1433,15 @@ $totales2 = 'si';
 	
 	
 	?></td>
+	
 <?php } ?>
 <td class="text-center align-middle">
-<?php if ($row['STATUS_DE_PAGO'] === 'RECHAZADO') { ?>
+<?php if ($row['STATUS_DE_PAGO'] === 'RECHAZADO' && empty($ACUSE_CANCELACION)) { ?>
     <button type="button" class="btn btn-sm btn-outline-danger mb-1 view_documento_pago"
             data-id="<?php echo (int) $row['02SUBETUFACTURAid']; ?>"
             data-documento-tipo="acuse_cancelacion">SUBIR ACUSE DE CANCELACIÓN</button><br>
 <?php } ?>
-<?php if (trim((string) $row['PFORMADE_PAGO']) !== '03') { ?>
+<?php if (trim((string) $row['PFORMADE_PAGO']) !== '03' && empty($COMPLEMENTOS_PAGO_XML)) { ?>
     <button type="button" class="btn btn-sm btn-outline-primary view_documento_pago"
             data-id="<?php echo (int) $row['02SUBETUFACTURAid']; ?>"
             data-documento-tipo="complemento_pago">SUBIR COMPLEMENTO DE PAGO</button>
