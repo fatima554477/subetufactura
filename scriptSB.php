@@ -239,7 +239,7 @@ $('#RAZON_SOCIAL2').load(location.href + ' #RAZON_SOCIAL2');
 $('#RFC_PROVEEDOR2').load(location.href + ' #RFC_PROVEEDOR2');
 $('#CONCEPTO_PROVEE2').load(location.href + ' #CONCEPTO_PROVEE2');
 $('#TIPO_DE_MONEDA2').load(location.href + ' #TIPO_DE_MONEDA2');
-$('#FECHA_DE_PAGO2').load(location.href + ' #FECHA_DE_PAGO2');
+
 $('#NUMERO_CONSECUTIVO_PROVEE2').load(location.href + ' #NUMERO_CONSECUTIVO_PROVEE2');
 $('#2MONTO_FACTURA').load(location.href + ' #2MONTO_FACTURA');
 $('#2MONTO_DEPOSITAR').load(location.href + ' #2MONTO_DEPOSITAR');
@@ -407,6 +407,14 @@ success:function(data){
 });
 }
 
+// Valida que el número de evento tenga el formato: prefijo de la empresa (EPC, INN o EVE)
+// seguido ÚNICAMENTE de números, sin letras ni caracteres adicionales.
+// Devuelve true si es válido, false si no.
+function formatoNumeroEventoValido(numeroEvento) {
+    var patron = /^(EPC|INN|EVE)[0-9]+$/i;
+    return patron.test(numeroEvento);
+}
+
    
 $(document).ready(function(){
 	
@@ -452,13 +460,12 @@ const mostrarMensajeSubirFactura = (html, tiempoVisible) => {
 
 };
 const numeroEventoInput = $('input[name="NUMERO_EVENTO"]');
-const numeroEventoSanitizado = numeroEventoInput.val().replace(/\s+/g, '').trim();
+const numeroEventoSanitizado = numeroEventoInput.val().replace(/\s+/g, '').trim().toUpperCase();
 numeroEventoInput.val(numeroEventoSanitizado);
 const numeroEvento = numeroEventoSanitizado;
-const prefijosNumeroEvento = ["EPC", "INN", "EVE"];
 
-if (prefijosNumeroEvento.includes(numeroEvento.toUpperCase())) {
-       mostrarMensajeSubirFactura("<span style='color:red;'>FAVOR DE COMPLETAR EL NÚMERO DE EVENTO AGREGANDO EL NÚMERO CORRESPONDIENTE DESPUÉS DE LAS INICIALES DE LA EMPRESA.</span>", 5000);
+if (!formatoNumeroEventoValido(numeroEvento)) {
+       mostrarMensajeSubirFactura("<span style='color:red;'>EL NÚMERO DE EVENTO DEBE SER LAS INICIALES DE LA EMPRESA (EPC, INN O EVE) SEGUIDAS ÚNICAMENTE DE NÚMEROS, SIN LETRAS NI CARACTERES ADICIONALES. EJEMPLO: EPC123.</span>", 6000);
 
         return;
 }
@@ -485,7 +492,7 @@ $.ajax({
 			$("#PFORMADE_PAGO").val(''); //borra valores vienen de PHP
 		
 			$("#TIPO_DE_MONEDA").val(''); //borra valores vienen de PHP
-			$("#FECHA_DE_PAGO").val(''); //borra valores vienen de PHP
+		
 			$("#NUMERO_CONSECUTIVO_PROVEE").val(''); //borra valores vienen de PHP
 			$("#ADJUNTAR_FACTURA_XML").val(''); //borra valores vienen de PHP
 			$("#2MONTO_FACTURA").val(''); //borra valores vienen de PHP

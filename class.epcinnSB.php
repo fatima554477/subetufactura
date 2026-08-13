@@ -429,6 +429,61 @@ public function solocargartemp($archivo) {
 		$arrayquery = mysqli_query($conn,$variablequery);
 		return $row = mysqli_fetch_array($arrayquery, MYSQLI_ASSOC);
 	}
+    /**
+
+	 * Comprueba que la solicitud tenga cargadas ambas representaciones de la
+
+	 * factura. Los archivos se cargan por AJAX antes de guardar el formulario,
+
+	 * por lo que la validacion debe consultar la tabla de documentos.
+
+	 */
+
+	public function facturas_obligatorias_adjuntas($idRelacion, $idTemporal){
+
+		$conn = $this->db();
+
+		$stmt = mysqli_prepare($conn, "SELECT
+
+			MAX(CASE WHEN ADJUNTAR_FACTURA_XML IS NOT NULL AND TRIM(ADJUNTAR_FACTURA_XML) <> '' THEN 1 ELSE 0 END) AS tiene_xml,
+
+			MAX(CASE WHEN ADJUNTAR_FACTURA_PDF IS NOT NULL AND TRIM(ADJUNTAR_FACTURA_PDF) <> '' THEN 1 ELSE 0 END) AS tiene_pdf
+
+			FROM 02SUBETUFACTURADOCTOS WHERE idRelacion = ? AND idTemporal = ?");
+
+		if(!$stmt){ return false; }
+
+
+
+		$idRelacion = (string)$idRelacion;
+
+		$idTemporal = (string)$idTemporal;
+
+		mysqli_stmt_bind_param($stmt, 'ss', $idRelacion, $idTemporal);
+
+		if(!mysqli_stmt_execute($stmt)){
+
+			mysqli_stmt_close($stmt);
+
+			return false;
+
+		}
+
+
+
+		mysqli_stmt_bind_result($stmt, $tieneXml, $tienePdf);
+
+		mysqli_stmt_fetch($stmt);
+
+		mysqli_stmt_close($stmt);
+
+
+
+		return ((int)$tieneXml === 1 && (int)$tienePdf === 1);
+
+	}
+
+
 
 	// ══════════════════════════════════════════════════════════════════════
 	//  REVISORES (verificar existencia)
@@ -811,7 +866,7 @@ public function solocargartemp($archivo) {
 	public function lectorxmlX($NUMERO_CONSECUTIVO_PROVEE, $NOMBRE_COMERCIAL, $RAZON_SOCIAL, $VIATICOSOPRO,
 		$RFC_PROVEEDOR, $NUMERO_EVENTO, $NOMBRE_EVENTO, $CONCEPTO_PROVEE,
 		$MONTO_TOTAL_COTIZACION_ADEUDO, $MONTO_DEPOSITAR, $MONTO_PROPINA, $MONTO_FACTURA,
-		$TIPO_DE_MONEDA, $PFORMADE_PAGO, $FECHA_DE_PAGO, $STATUS_DE_PAGO,
+		$TIPO_DE_MONEDA, $PFORMADE_PAGO,  $STATUS_DE_PAGO,
 		$NOMBRE_DEL_EJECUTIVO, $OBSERVACIONES_1, $FECHA_DE_LLENADO,
 		$ADJUNTAR_FACTURA_XML, $ADJUNTAR_FACTURA_PDF, $ADJUNTAR_COTIZACION11,
 		$CONPROBANTE_TRANSFERENCIA, $ADJUNTAR_ARCHIVO_1, $IMPUESTO_HOSPEDAJE,
@@ -853,7 +908,7 @@ public function solocargartemp($archivo) {
 		MONTO_FACTURA = '".$MONTO_FACTURA."',
 		TIPO_DE_MONEDA = '".$TIPO_DE_MONEDA."',
 		PFORMADE_PAGO = '".$PFORMADE_PAGO."',
-		FECHA_DE_PAGO = '".$FECHA_DE_PAGO."',
+		
 		STATUS_DE_PAGO = '".$STATUS_DE_PAGO."',
 		NOMBRE_DEL_EJECUTIVO = '".$NOMBRE_DEL_EJECUTIVO."',
 		OBSERVACIONES_1 = '".$OBSERVACIONES_1."',
@@ -868,7 +923,7 @@ public function solocargartemp($archivo) {
 		MONTO_TOTAL_COTIZACION_ADEUDO, MONTO_DEPOSITAR, MONTO_PROPINA,
 		IMPUESTO_HOSPEDAJE, MONTO_DEPOSITADO, PENDIENTE_PAGO, IVA,
 		NOMBRE_DEL_AYUDO, TImpuestosRetenidosIVA, TImpuestosRetenidosISR, descuentos,
-		MONTO_FACTURA, TIPO_DE_MONEDA, PFORMADE_PAGO, FECHA_DE_PAGO,
+		MONTO_FACTURA, TIPO_DE_MONEDA, PFORMADE_PAGO, 
 		STATUS_DE_PAGO, NOMBRE_DEL_EJECUTIVO, OBSERVACIONES_1, FECHA_DE_LLENADO,
 		idRelacion) values (
 		'".$ADJUNTAR_FACTURA_XML."', '".$ADJUNTAR_FACTURA_PDF."',
@@ -879,7 +934,7 @@ public function solocargartemp($archivo) {
 		'".$MONTO_TOTAL_COTIZACION_ADEUDO."', '".$MONTO_DEPOSITAR."', '".$MONTO_PROPINA."',
 		'".$IMPUESTO_HOSPEDAJE."', '".$MONTO_DEPOSITADO."', '".$PENDIENTE_PAGO."', '".$IVA."',
 		'".$NOMBRE_DEL_AYUDO."', '".$TImpuestosRetenidosIVA."', '".$TImpuestosRetenidosISR."', '".$descuentos."',
-		'".$MONTO_FACTURA."', '".$TIPO_DE_MONEDA."', '".$PFORMADE_PAGO."', '".$FECHA_DE_PAGO."',
+		'".$MONTO_FACTURA."', '".$TIPO_DE_MONEDA."', '".$PFORMADE_PAGO."',
 		'".$STATUS_DE_PAGO."', '".$NOMBRE_DEL_EJECUTIVO."', '".$OBSERVACIONES_1."', '".$FECHA_DE_LLENADO."',
 		'".$session."');";
 

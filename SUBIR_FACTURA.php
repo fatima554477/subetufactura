@@ -251,7 +251,7 @@ document.addEventListener("DOMContentLoaded", function () {
 				
 				 
                  <tr  style="background: #d2faf1" > 
-                 <th scope="row"> <label for="validationCustom03" class="form-label">ADJUNTAR FACTURA(FORMATO &nbsp;<a style="color:red;font:12px">(XML)</a></label></th>
+                 <th scope="row"> <label for="validationCustom03" class="form-label">ADJUNTAR FACTURA(FORMATO &nbsp;<a style="color:red;font:12px">(XML)<br><a style="color:red;font-size:11px">OBLIGATORIO</a></label></th>
                  <td>
 				 
 	
@@ -279,9 +279,7 @@ while($rowsube=mysqli_fetch_array($listadosube)){
 }
 	$NUMERO_CONSECUTIVO_PROVEE = '';
 
-	$FECHA_DE_PAGO = '';
 
-	$NUMERO_EVENTO = '';
 
 	$regreso = $SUBEFACTURA->variable_SUBETUFACTURA();
 $url = '';
@@ -291,7 +289,7 @@ $url = '';
 if (is_array($regreso) && isset($regreso['ADJUNTAR_FACTURA_XML'])) {
 
 		$NUMERO_EVENTO = isset($regreso['NUMERO_EVENTO']) ? $regreso['NUMERO_EVENTO'] : '';
-		$FECHA_DE_PAGO = isset($regreso['FECHA_DE_PAGO']) ? $regreso['FECHA_DE_PAGO'] : '';
+
 
 		$url = __ROOT1__.'/includes/archivos/'.$regreso['ADJUNTAR_FACTURA_XML'];
 
@@ -349,18 +347,7 @@ if( $url && file_exists($url) ){
     $impueRdesglosado002 = $regreso['impueRdesglosado002'];
 	$impueRdesglosado001 = $regreso['impueRdesglosado001'];
 
-	/*nuevo*/
 
-	$fechaInicio=strtotime(date('Y-m-d'));
-	$FECHA_domingo = date('Y-m-d', strtotime('next monday', $fechaInicio));
-	$FECHA_jueves = date('Y-m-d', strtotime('next Thursday', strtotime($FECHA_domingo)));
-	if(trim((string)$FECHA_DE_PAGO) === ''){
-		$FECHA_DE_PAGO = $FECHA_jueves;//'2023-08-03';//. $conexion2->fechaEs($FECHA_jueves);
-	}
-
-
-
-	/*nuevo*/
 	
 	$NUMERO_CONSECUTIVO_PROVEE = $SUBEFACTURA->select_02XML()+1;
 	
@@ -387,7 +374,7 @@ $atributoSelectBloqueoFacturaXml = $bloquearCamposFacturaXml ? ' disabled="disab
 				 </td>
                  </tr>
                  <tr style="background: #d2faf1">
-                 <th scope="row"> <label for="validationCustom03" class="form-label">ADJUNTAR FACTURA (FORMATO PDF)</label></th>
+                 <th scope="row"> <label for="validationCustom03" class="form-label">ADJUNTAR FACTURA (FORMATO PDF)<br><a style="color:red;font-size:11px">OBLIGATORIO</a></label></th>
 				 
 				 
                  <td style="width: 600px;">
@@ -447,8 +434,7 @@ while($rowsube=mysqli_fetch_array($listadosube)){
 				 </td>
                  </tr>
 
-					<div id="FECHA_DE_PAGO2">
-							<input type="hidden" class="form-control" id="FECHA_DE_PAGO2" required="" value="<?php echo $FECHA_DE_PAGO; ?>" name="FECHA_DE_PAGO" placeholder="FECHA DE PAGO">
+		
 
                  <tr  style="background:#fcf3cf"> 
                  <th scope="row"> <label for="validationCustom03" class="form-label">RFC DEL PROVEEDOR:</label></th>
@@ -757,7 +743,7 @@ while($rowsube=mysqli_fetch_array($listadosube)){
 				 </td> </tr>-->
  <input type="hidden" style="width:200px;" class="form-control" id="validationCustom03" value="<?php echo date('d-m-Y H:i:s'); ?>" name="FECHA_DE_LLENADO">
          
-  <input type="hidden" id="FECHA_DE_PAGO" name="FECHA_DE_PAGO" value="<?php echo $FECHA_DE_PAGO; ?>">
+
          <input type="hidden" name="hiddensubefactura" value="hiddensubefactura">
 		 
          
