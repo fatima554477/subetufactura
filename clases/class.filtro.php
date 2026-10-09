@@ -35,6 +35,61 @@ define("__ROOT1__", dirname(dirname(__FILE__)));
 		$tables = '02SUBETUFACTURA';
 		$tables2 = '02XML';	
 		
+		/* El permiso pertenece al proveedor, pero un mismo nombre comercial puede
+
+		 * estar relacionado con mas de un registro de proveedor. La vista debe
+
+		 * incluir todos esos registros sin mostrar facturas de otra empresa. */
+
+		$idProveedor = isset($_SESSION['idPROVpermiso']) ? trim((string)$_SESSION['idPROVpermiso']) : '';
+
+		$nombreComercialPermitido = '';
+
+		if ($idProveedor !== '') {
+
+			$idProveedorEscapado = $this->mysqli->real_escape_string($idProveedor);
+
+			$sqlNombreComercial = "SELECT P_NOMBRE_COMERCIAL_EMPRESA FROM 02direccionproveedor1 WHERE idRelacion = '".$idProveedorEscapado."' LIMIT 1";
+
+			$resultadoNombreComercial = $this->mysqli->query($sqlNombreComercial);
+
+			if ($resultadoNombreComercial && ($proveedor = $resultadoNombreComercial->fetch_assoc())) {
+
+				$nombreComercialPermitido = trim((string)$proveedor['P_NOMBRE_COMERCIAL_EMPRESA']);
+
+			}
+
+		}
+
+		if ($nombreComercialPermitido === '' && isset($_SESSION['USUARIO_CRM'])) {
+
+			$nombreComercialPermitido = trim((string)$_SESSION['USUARIO_CRM']);
+
+		}
+
+
+
+		if ($nombreComercialPermitido !== '') {
+
+			$nombreComercialEscapado = $this->mysqli->real_escape_string($nombreComercialPermitido);
+
+			$filtroProveedor = "TRIM($tables.NOMBRE_COMERCIAL) = '".$nombreComercialEscapado."'";
+
+		} elseif ($idProveedor !== '') {
+
+			// Conserva el alcance anterior si el proveedor aun no tiene nombre comercial.
+
+			$filtroProveedor = "$tables.idRelacion = '".$idProveedorEscapado."'";
+
+		} else {
+
+			// Sin una identidad de proveedor valida no se debe exponer ningun registro.
+
+			$filtroProveedor = '1 = 0';
+
+		}
+
+		
 		$sWhereCC =" ON 02SUBETUFACTURA.id = 02XML.`ultimo_id` ";
 		$sWhere2="";$sWhere3="";
 		
@@ -265,11 +320,15 @@ $sWhere2.="  $tables2.propina = '".$propina."' and ";}
 if ($sWhere2 != "") {
     $sWhere22 = substr($sWhere2, 0, -4); // ojo: -4 asume que terminas con ' OR ' o ' AND '
     $sWhere3 = ' ' . $sWhereCC . ' WHERE ((' . $sWhere22 . ') 
-        AND (02SUBETUFACTURA.ID_RELACIONADO IS NULL OR TRIM(02SUBETUFACTURA.ID_RELACIONADO) = "") ) and '.$tables.'.idRelacion = "'.$_SESSION['idPROVpermiso'].'" '; 
+        AND (02SUBETUFACTURA.ID_RELACIONADO IS NULL OR TRIM(02SUBETUFACTURA.ID_RELACIONADO) = "") ) AND '.$filtroProveedor.' ';
+
+
 
 } else {
 
-    $sWhere3 = ' ' . $sWhereCC . ' WHERE (02SUBETUFACTURA.ID_RELACIONADO IS NULL OR TRIM(02SUBETUFACTURA.ID_RELACIONADO) = "") and '.$tables.'.idRelacion = "'.$_SESSION['idPROVpermiso'].'" '; 
+    $sWhere3 = ' ' . $sWhereCC . ' WHERE (02SUBETUFACTURA.ID_RELACIONADO IS NULL OR TRIM(02SUBETUFACTURA.ID_RELACIONADO) = "") AND '.$filtroProveedor.' ';
+
+
 
 }
 
