@@ -21,33 +21,39 @@ $_SESSION['id'] = $_SESSION['idem'];
 $situacionfiscal = isset($_GET['situacionfiscal'])?$_GET['situacionfiscal']:'';
 if($situacionfiscal!=''){
 	//ADJUNTAR_CONSFISCAL_INFORMACION
-$row = $SUBEFACTURA->descargar_documentos($situacionfiscal);
-$ADJUNTAR_CONSFISCAL_INFORMACION = $row['ADJUNTAR_CONSFISCAL_INFORMACION'];
-header("Content-disposition: attachment; filename=".$ADJUNTAR_CONSFISCAL_INFORMACION."");
+$row = $SUBEFACTURA->descargar_documentos($situacionfiscal, 'CONSTANCIA DE SITUACIÓN FISCAL');
+$ADJUNTAR_DOCUMENTO_LEGAL = $row['ADJUNTAR_DOCUMENTO_LEGAL'];
+header("Content-disposition: attachment; filename=".$ADJUNTAR_DOCUMENTO_LEGAL."");
 header("Content-type: MIME");
-readfile('includes/archivos/'.$ADJUNTAR_CONSFISCAL_INFORMACION);
+readfile('includes/archivos/'.$ADJUNTAR_DOCUMENTO_LEGAL);
 exit;
+
 }
+
 
 $opinion_cumplimiento = isset($_GET['opinion_cumplimiento'])?$_GET['opinion_cumplimiento']:'';
 if($opinion_cumplimiento!=''){
-$row = $SUBEFACTURA->descargar_documentos($opinion_cumplimiento);
-$ADJUNTAR_OPINION_INFORMACION = $row['ADJUNTAR_OPINION_INFORMACION'];
-header("Content-disposition: attachment; filename=".$ADJUNTAR_OPINION_INFORMACION."");
+$row = $SUBEFACTURA->descargar_documentos($opinion_cumplimiento, 'OPINION DE CUMPLIMIENTO');
+$ADJUNTAR_DOCUMENTO_LEGAL = $row['ADJUNTAR_DOCUMENTO_LEGAL'];
+header("Content-disposition: attachment; filename=".$ADJUNTAR_DOCUMENTO_LEGAL."");
 header("Content-type: MIME");
-readfile('includes/archivos/'.$ADJUNTAR_OPINION_INFORMACION);
+readfile('includes/archivos/'.$ADJUNTAR_DOCUMENTO_LEGAL);
 exit;
+
 }
+
 
 $domicilio_empresa = isset($_GET['domicilio_empresa'])?$_GET['domicilio_empresa']:'';
 if($domicilio_empresa!=''){
-$row = $SUBEFACTURA->descargar_documentos($domicilio_empresa);
-$ADJUNTAR_CDOMICI_INFORMACION = $row['ADJUNTAR_CDOMICI_INFORMACION'];
-header("Content-disposition: attachment; filename=".$ADJUNTAR_CDOMICI_INFORMACION."");
+$row = $SUBEFACTURA->descargar_documentos($domicilio_empresa, 'COMPROBANTE DE DOMICILIO');
+$ADJUNTAR_DOCUMENTO_LEGAL = $row['ADJUNTAR_DOCUMENTO_LEGAL'];
+header("Content-disposition: attachment; filename=".$ADJUNTAR_DOCUMENTO_LEGAL."");
 header("Content-type: MIME");
-readfile('includes/archivos/'.$ADJUNTAR_CDOMICI_INFORMACION);
+readfile('includes/archivos/'.$ADJUNTAR_DOCUMENTO_LEGAL);
 exit;
+
 }
+
 
 	
 ?><!doctype html>
@@ -174,7 +180,7 @@ color:red;
  require "subirfactura/documentos.php";
 require "subirfactura/NOTAS_IMPORTANTES2.php";
 
-
+require "subirfactura/DOCUMENTOS_LEGALES.php";
  if($conexion->variablespermisos('','SUBIR_FACTURA','ver')=='si'){
  require "subirfactura/SUBIR_FACTURA.php";
  require "subirfactura/fetch_page_nuevo.php";

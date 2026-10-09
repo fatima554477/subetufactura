@@ -116,7 +116,13 @@ $ENVIAFISCAL = isset($_POST["ENVIAFISCAL"])?$_POST["ENVIAFISCAL"]:"";
 $borradocufiscal = isset($_POST["borradocufiscal"])?$_POST["borradocufiscal"]:"";
 $ENVIAR_EMAIL_DOCUFISCAL = isset($_POST["ENVIAR_EMAIL_DOCUFISCAL"])?$_POST["ENVIAR_EMAIL_DOCUFISCAL"]:"";
  
- 
+ if(isset($_POST['validarNumeroEvento'])){
+	header('Content-Type: application/json; charset=utf-8');
+	$numeroEventoValidar = strtoupper(preg_replace('/\s+/', '', trim((string)$_POST['validarNumeroEvento'])));
+	$existe = formatoNumeroEventoValidoSB($numeroEventoValidar) && $SUBEFACTURA->existeNumeroEvento($numeroEventoValidar);
+	echo json_encode(array('valido' => $existe, 'numeroEvento' => $numeroEventoValidar));
+	exit;
+}
  
 $action = isset($_POST["action"])?$_POST["action"]:"";
  
@@ -298,7 +304,8 @@ $NOMBRE_COMERCIAL = isset($_POST["NOMBRE_COMERCIAL"])?$_POST["NOMBRE_COMERCIAL"]
 $RAZON_SOCIAL = isset($_POST["RAZON_SOCIAL"])?$_POST["RAZON_SOCIAL"]:"";
 $VIATICOSOPRO = isset($_POST["VIATICOSOPRO"])?$_POST["VIATICOSOPRO"]:"";
 $RFC_PROVEEDOR = isset($_POST["RFC_PROVEEDOR"])?$_POST["RFC_PROVEEDOR"]:"";
-$NUMERO_EVENTO = isset($_POST["NUMERO_EVENTO"])?$_POST["NUMERO_EVENTO"]:"";
+$NUMERO_EVENTO = isset($_POST["NUMERO_EVENTO"])?strtoupper(preg_replace('/\s+/', '', trim((string)$_POST["NUMERO_EVENTO"]))):"";
+
 // Obtener el nombre del evento a partir del número proporcionado
 $NOMBRE_EVENTO = $SUBEFACTURA->obtenerNombreEvento($NUMERO_EVENTO);
 $CONCEPTO_PROVEE = isset($_POST["CONCEPTO_PROVEE"])?$_POST["CONCEPTO_PROVEE"]:"";
@@ -341,6 +348,11 @@ if(!formatoNumeroEventoValidoSB($NUMERO_EVENTO)){
         echo "<P style='color:red; font-size:23px;'>EL NÚMERO DE EVENTO DEBE SER LAS INICIALES DE LA EMPRESA (EPC, INN O EVE) SEGUIDAS ÚNICAMENTE DE NÚMEROS, SIN LETRAS, ESPACIOS NI CARACTERES ADICIONALES. EJEMPLO: EPC123.</p>";
 			exit;
  
+}
+
+elseif(!$SUBEFACTURA->existeNumeroEvento($NUMERO_EVENTO)){
+		echo "<p style='color:red; font-size:23px;'>EL NÚMERO DE EVENTO NO EXISTE EN EL CATÁLOGO DE EVENTOS. VERIFÍCALO ANTES DE GUARDAR.</p>";
+		exit;
 }
  
 elseif($NOMBRE_COMERCIAL == "" or $NUMERO_EVENTO == "" or $NOMBRE_DEL_EJECUTIVO == "" or $MONTO_TOTAL_COTIZACION_ADEUDO == ""){

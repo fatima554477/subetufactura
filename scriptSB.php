@@ -470,7 +470,25 @@ if (!formatoNumeroEventoValido(numeroEvento)) {
         return;
 }
 
-const formData = new FormData($('#SUBIRFACTURAform')[0]);
+$.ajax({
+   url: "subirfactura/controladorSB.php",
+   type: "POST",
+   dataType: "json",
+   data: { validarNumeroEvento: numeroEvento }
+}).done(function(validacionEvento) {
+   if (!validacionEvento.valido) {
+      numeroEventoInput.addClass("is-invalid").removeClass("is-valid");
+      $("#NUMERO_EVENTO_VALIDACION").css("color", "red").text("El número de evento no existe en el catálogo de eventos.");
+      mostrarMensajeSubirFactura("<span style='color:red;'>EL NÚMERO DE EVENTO NO EXISTE. VERIFÍCALO ANTES DE GUARDAR.</span>", 6000);
+      
+      return;
+   }
+
+   numeroEventoInput.addClass("is-valid").removeClass("is-invalid");
+   $("#NUMERO_EVENTO_VALIDACION").css("color", "green").text("Número de evento verificado.");
+
+   const formData = new FormData($('#SUBIRFACTURAform')[0]);
+
 
 $.ajax({
    url:"subirfactura/controladorSB.php",
@@ -549,6 +567,10 @@ $.ajax({
 .fail(function() {
     console.log("detect error");
 });
+}).fail(function() {
+   mostrarMensajeSubirFactura("<span style='color:red;'>NO FUE POSIBLE VERIFICAR EL NÚMERO DE EVENTO. INTENTA NUEVAMENTE.</span>", 6000);
+});
+
 });
 
 

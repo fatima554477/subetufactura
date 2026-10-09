@@ -2,7 +2,7 @@
 
 <div id="content">     
 			<hr/>
-		<strong>	  <p class="mb-0 text-uppercase" ><img src="includes/contraer31.png" onclick='LIMPIAR();' id="mostrar3" style="cursor:pointer;"/>
+		<strong>	  <p class="mb-0 text-uppercase" ><img src="includes/contraer31.png" onclick="load(1);" id="mostrar3" style="cursor:pointer;"/>
 <img src="includes/contraer41.png" id="ocultar3" style="cursor:pointer;"/>&nbsp;&nbsp;&nbsp;STATUS DE TUS FACTURAS</p></strong></div>
 
 
@@ -36,7 +36,9 @@
 <td width="30%" align="center">					
 	<button  class="btn btn-sm btn-outline-success px-5" type="button" onclick="load(1);" >BUSCAR</button>
 </td>
-
+        <p><strong style="background:#ffe6e6">LETRAS ROJAS:&nbsp;&nbsp;&nbsp;
+        STATUS DE PAGO  (RECHAZADO)
+        </p></strong> 
 
 
 </tr>

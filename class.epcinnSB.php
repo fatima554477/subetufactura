@@ -262,6 +262,15 @@ class accesoclase extends colaboradores{
 		}
 		return '';
 	}
+	
+	public function existeNumeroEvento($NUMERO_EVENTO){
+		$conn = $this->db();
+		$numeroEvento = mysqli_real_escape_string($conn, trim((string)$NUMERO_EVENTO));
+		$sql = "SELECT 1 FROM 04altaeventos WHERE NUMERO_EVENTO = '".$numeroEvento."' LIMIT 1";
+		$resultado = mysqli_query($conn, $sql);
+
+		return $resultado && mysqli_num_rows($resultado) > 0;
+	}
 
 	public function obtener_nombrecomercial($id){
 		$conn = $this->db();

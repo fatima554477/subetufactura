@@ -1,9 +1,9 @@
 
-
 <?php
 /*
 fecha sandor: 
 fecha fatis : 15/04/2025
+MOD fatis   : 26/AGO/2026 
 */
 ?>
 
@@ -222,8 +222,8 @@ document.addEventListener("DOMContentLoaded", function () {
 <div id="content">     
 			<hr/>
 	<strong> <P class="mb-0 text-uppercase">
-<img src="includes/contraer31.png" id="mostrar101" style="cursor:pointer;"/>
-<img src="includes/contraer41.png" id="ocultar101" style="cursor:pointer;"/>&nbsp;&nbsp;&nbsp;SUBE TU FACTURA</p></strong></div>
+<img src="includes/contraer31.png" id="mostrar1" style="cursor:pointer;"/>
+<img src="includes/contraer41.png" id="ocultar1" style="cursor:pointer;"/>&nbsp;&nbsp;&nbsp;SUBE TU FACTURA</p></strong></div>
 
 
 <div  id="mensajeSUBIRFACTURA2">
@@ -231,7 +231,7 @@ document.addEventListener("DOMContentLoaded", function () {
 									<div class="progress-bar" role="progressbar" style="width: <?php echo $contactosventasproveedoresporcentaje ; ?>%;" aria-valuenow="25" aria-valuemin="0" aria-valuemax="100"><?php echo $contactosventasproveedoresporcentaje ; ?>%</div></div></div>
 
 
-	        <div id="target101" style="display:block;"  class="content2">
+	        <div id="target1" style="display:block;"  class="content2">
         <div class="card">
           <div class="card-body">
 
@@ -698,8 +698,74 @@ while($rowsube=mysqli_fetch_array($listadosube)){
 
                  <tr   style="background: #d2faf1"> 
 
-                 <th scope="row"> <label for="validationCustom03" class="form-label">NOMBRE DEL EJECUTIVO QUE SOLICITO O REALIZÓ LA COMPRA:<br><a style="color:red;font-size:11px">OBLIGATORIO</a></label></th>
-                 <td><input type="text" class="form-control" id="validationCustom03" required=""  value="<?php echo $NOMBRE_DEL_EJECUTIVO; ?>" name="NOMBRE_DEL_EJECUTIVO"placeholder="NOMBRE DEL EJECUTIVO"></td>
+                 <th scope="row"> <label for="NOMBRE_DEL_EJECUTIVO" class="form-label">NOMBRE COMPLETO DEL EJECUTIVO QUE SOLICITO O REALIZÓ LA COMPRA:<br><a style="color:red;font-size:11px">OBLIGATORIO: SELECCIONE UNA DE LAS OPCIONES SUGERIDAS</a></label></th>
+                 <td style="position:relative;">
+				 <input type="text" class="form-control" id="NOMBRE_DEL_EJECUTIVO" required=""  value="<?php echo $NOMBRE_DEL_EJECUTIVO; ?>" name="NOMBRE_DEL_EJECUTIVO" placeholder="NOMBRE DEL EJECUTIVO" autocomplete="off">
+				 <div id="sugerencias_NOMBRE_DEL_EJECUTIVO" class="list-group" style="position:absolute;z-index:1000;width:100%;max-height:220px;overflow-y:auto;display:none;box-shadow:0 2px 6px rgba(0,0,0,.2);"></div>
+				 <script type="text/javascript">
+				 // Lista de colaboradores (misma fuente que pagoproveedores: colaborador_generico_bueno)
+				 // El campo NOMBRE_DEL_EJECUTIVO sigue siendo libre; esto solo sugiere mientras se escribe.
+				 var listaColaboradoresSF = [
+				 <?php
+				 $queryColaboradoresSF = $conexion->colaborador_generico_bueno();
+				 $nombresColaboradoresSF = array();
+				 while($rowColaboradorSF = mysqli_fetch_array($queryColaboradoresSF)){
+					 $nombreCompletoColaboradorSF = trim($rowColaboradorSF['NOMBRE_1'].' '.$rowColaboradorSF['NOMBRE_2'].' '.$rowColaboradorSF['APELLIDO_PATERNO'].' '.$rowColaboradorSF['APELLIDO_MATERNO']);
+					 $nombreCompletoColaboradorSF = preg_replace('/\s+/', ' ', $nombreCompletoColaboradorSF);
+					 if($nombreCompletoColaboradorSF !== ''){
+						 $nombresColaboradoresSF[] = $nombreCompletoColaboradorSF;
+					 }
+				 }
+				 $nombresColaboradoresSF = array_values(array_unique($nombresColaboradoresSF));
+				 echo implode(",", array_map(function($n){ return json_encode($n, JSON_UNESCAPED_UNICODE); }, $nombresColaboradoresSF));
+				 ?>
+				 ];
+
+				 $(document).ready(function(){
+					 var $inputEjecutivoSF = $('#NOMBRE_DEL_EJECUTIVO');
+					 var $sugerenciasEjecutivoSF = $('#sugerencias_NOMBRE_DEL_EJECUTIVO');
+
+					 $inputEjecutivoSF.on('input', function(){
+						 var textoEscrito = $(this).val().trim().toUpperCase();
+						 $sugerenciasEjecutivoSF.empty();
+
+						 if(textoEscrito === ''){
+							 $sugerenciasEjecutivoSF.hide();
+							 return;
+						 }
+
+						 // Solo coincidencias que EMPIEZAN con lo que ya se escribió (primer nombre en adelante)
+						 var coincidenciasSF = listaColaboradoresSF.filter(function(nombreColaborador){
+							 return nombreColaborador.toUpperCase().indexOf(textoEscrito) === 0;
+						 });
+
+						 if(coincidenciasSF.length === 0){
+							 $sugerenciasEjecutivoSF.hide();
+							 return;
+						 }
+
+						 coincidenciasSF.slice(0, 15).forEach(function(nombreColaborador){
+							 $('<a href="#" class="list-group-item list-group-item-action"></a>')
+								 .text(nombreColaborador)
+								 .on('click', function(e){
+									 e.preventDefault();
+									 $inputEjecutivoSF.val(nombreColaborador);
+									 $sugerenciasEjecutivoSF.empty().hide();
+								 })
+								 .appendTo($sugerenciasEjecutivoSF);
+						 });
+
+						 $sugerenciasEjecutivoSF.show();
+					 });
+
+					 $(document).on('click', function(e){
+						 if(!$(e.target).closest('#NOMBRE_DEL_EJECUTIVO, #sugerencias_NOMBRE_DEL_EJECUTIVO').length){
+							 $sugerenciasEjecutivoSF.hide();
+						 }
+					 });
+				 });
+				 </script>
+				 </td>
                  </tr>
 				 <tr style="background:#fcf3cf">
 				 				<th scope="row">
@@ -709,16 +775,12 @@ while($rowsube=mysqli_fetch_array($listadosube)){
 				</td>
 			</tr>
             
-                 <tr  style="background: #d2faf1"> 
 
-                 <th scope="row"> <label for="validationCustom03" class="form-label">OBSERVACIONES:</label></th>
-                 <td><input type="text" class="form-control" id="validationCustom03" required=""  value="<?php echo $OBSERVACIONES_1; ?>" name="OBSERVACIONES_1"placeholder="OBSERVACIONES "></td>
-                 </tr>
           
             
-                 <!-- <tr style="background: #d2faf1">  
+                 <tr style="background: #d2faf1">  
 
-                 <th scope="row"> <label for="validationCustom03" class="form-label">ADJUNTAR ARCHIVO RELACIONADO A ESTE GASTO: (CUALQUIER FORMATO)</label></th>
+                 <th scope="row"> <label for="validationCustom03" class="form-label">ADJUNTAR FOTOS DEL SERVICIO OTORGADO: (CUALQUIER FORMATO)</label></th>
                  <td>
 				 	 
  
@@ -740,7 +802,13 @@ while($rowsube=mysqli_fetch_array($listadosube)){
 	}
 	?></div>	
 
-				 </td> </tr>-->
+				 </td> </tr>
+				 
+				                  <tr  style="background: #d2faf1"> 
+
+                 <th scope="row"> <label for="validationCustom03" class="form-label">OBSERVACIONES:</label></th>
+                 <td><input type="text" class="form-control" id="validationCustom03" required=""  value="<?php echo $OBSERVACIONES_1; ?>" name="OBSERVACIONES_1"placeholder="OBSERVACIONES "></td>
+                 </tr>
  <input type="hidden" style="width:200px;" class="form-control" id="validationCustom03" value="<?php echo date('d-m-Y H:i:s'); ?>" name="FECHA_DE_LLENADO">
          
 
