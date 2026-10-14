@@ -3,7 +3,7 @@
 			<hr/>
 	<strong> <P class="mb-0 text-uppercase">
 <img src="includes/contraer31.png" id="mostrar5" style="cursor:pointer;"/>
-<img src="includes/contraer41.png" id="ocultar5" style="cursor:pointer;"/>&nbsp;&nbsp;&nbsp;DESCARGA LOS DOCUMENTOS FISCALES DE LA EMPRESA</p></strong></div>
+<img src="includes/contraer41.png" id="ocultar5" style="cursor:pointer;"/>&nbsp;&nbsp;&nbsp;DESCARGA LOS DOCUMENTOS FISCALES DE NUESTRO CORPORATIVO</p></strong></div>
 
 
 <div  id="mensajedocumentosdocu">
@@ -24,16 +24,24 @@ $querycontras = $SUBEFACTURA->listado_empresas1a();
 <?php
 while($row = mysqli_fetch_array($querycontras))
 {
+$doc_situacion = $SUBEFACTURA->descargar_documentos($row["id"], 'COSNTACIA DE SITUACIÓN FISCAL');
+$doc_opinion   = $SUBEFACTURA->descargar_documentos($row["id"], 'OPINION DE CUMPLIMIENTO');
+$doc_domicilio = $SUBEFACTURA->descargar_documentos($row["id"], 'COMPROBANTE DE DOMICILIO');
 ?>
 
  <STRONG>EMPRESA:&nbsp;&nbsp;<?php echo $row["NCE_INFORMACION"]; ?></STRONG><BR/>
+ 
+ 
 <a href="<?php echo $_SERVER['PHP_SELF'].'?situacionfiscal='.$row["id"]; ?>" class="" target="_blanck">DESCARGAR PDF CONSTANCIA DE SITUACION FISCAL</a>
+<?php if($doc_situacion){ echo '<BR/><small>Último: '.$doc_situacion['FECHA_ULTIMA_DOCUMEN'].'</small>'; } ?>
 <BR/>
 <BR/>
 <a href="<?php echo $_SERVER['PHP_SELF'].'?opinion_cumplimiento='.$row["id"]; ?>" class="" target="_blanck">DESCARGAR PDF OPINIÓN DE CUMPLIMIENTO</a>
+<?php if($doc_opinion){ echo '<BR/><small>Último: '.$doc_opinion['FECHA_ULTIMA_DOCUMEN'].'</small>'; } ?>
 <BR/>
 <BR/>
 <a href="<?php echo $_SERVER['PHP_SELF'].'?domicilio_empresa='.$row["id"]; ?>" class="" target="_blanck">DESCARGAR PDF COMPROBANTE DE DOMICILIO</a>
+<?php if($doc_domicilio){ echo '<BR/><small>Último: '.$doc_domicilio['FECHA_ULTIMA_DOCUMEN'].'</small>'; } ?>
 
 
 
@@ -44,53 +52,11 @@ while($row = mysqli_fetch_array($querycontras))
 
 
 
-	<!--<form class="row g-3 needs-validation was-validated" novalidate="" id="empresadocu" method="post" action="<?php echo $_SERVER['PHP_SELF']; ?>" >
-	
-	
-                  <table  style="border-collapse: collapse;" border="1" class="table mb-0 table-striped">
-
-
-         <tr style="background:#ebf8fa"> 
-         <th scope="row"> <label for="validationCustom03" class="form-label">DESCARGAR CONTRATO PARA LLENADO DE PROVEEDORES:</label></th>
-         <td><input type="text" class="form-control" id="validationCustom03" required=""   value="<?php echo $empresa_documento; ?>"   name="empresa_documento"></td>
-         </tr>
 
 
 
-		 
-         <tr style="background:#ebf8fa"> 
-         <th scope="row"> <label for="validationCustom03" class="form-label">DESCARGAR CONTRATO PARA LLENADO DE PROVEEDORES:</label></th>
-         <td><input type="text" class="form-control" id="validationCustom03" required=""   value="<?php echo $contrato_documento; ?>"   name="contrato_documento"></td>
-         </tr>		 
-         <tr style="background:#ebf8fa"> 
-         <th scope="row"> <label for="validationCustom03" class="form-label">DESCARGAR CONSTANCIA DE SITUACIÓN FISCAL:</label></th>
-         <td><input type="text" class="form-control" id="validationCustom03" required=""   value="<?php echo $constancia_documento; ?>"   name="constancia_documento"></td>
-         </tr>
-    <tr style="background:#ebf8fa"> 
-         <th scope="row"> <label for="validationCustom03" class="form-label">DESCARGAR OPINIÓN DE CUMPLIMIENTO:</label></th>
-         <td><input type="text" class="form-control" id="validationCustom03" required=""   value="<?php echo $opinion_documento; ?>"   name="opinion_documento"></td>
-         </tr>
-    <tr style="background:#ebf8fa"> 
-         <th scope="row"> <label for="validationCustom03" class="form-label">DESCARGAR RÉGIMEN FISCAL:</label></th>
-         <td><input type="text" class="form-control" id="validationCustom03" required=""   value="<?php echo $regimen_documento; ?>"   name="regimen_documento"></td>
-         </tr>    <tr style="background:#ebf8fa"> 
-         <th scope="row"> <label for="validationCustom03" class="form-label">DESCARGAR ACTA CONSTITUTIVA ( PERSONA MORAL): </label></th>
-         <td><input type="text" class="form-control" id="validationCustom03" required=""   value="<?php echo $acta_documento; ?>"   name="acta_documento"></td>
-         </tr>
-		 <tr>
-		 <td>
 
 
-     <input type="hidden" name="hiddendocupro" value="hiddendocupro">
-
-<button class="btn btn-primary" type="button" id="enviarDOCUproveedor">ENVIAR</button></td></tr>   
-	</div>
-    
-
-	
-
-			</table>
-		</form>-->
 		</div>
 		</div> 
 		</div> 
