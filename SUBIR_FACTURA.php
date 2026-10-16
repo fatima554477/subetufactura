@@ -809,6 +809,10 @@ while($rowsube=mysqli_fetch_array($listadosube)){
                  <th scope="row"> <label for="validationCustom03" class="form-label">OBSERVACIONES:</label></th>
                  <td><input type="text" class="form-control" id="validationCustom03" required=""  value="<?php echo $OBSERVACIONES_1; ?>" name="OBSERVACIONES_1"placeholder="OBSERVACIONES "></td>
                  </tr>
+<tr style="background: #d2faf1">
+<th scope="row"><label for="email_enviacomprobante">EMAIL PARA ENVÍO DE COMPROBANTE DE PAGO<br><span style="color:red;font-size:11px">OBLIGATORIO</span></label></th>
+<td><input type="email" class="form-control" id="email_enviacomprobante" name="email_enviacomprobante" value="<?php echo htmlspecialchars(isset($email_enviacomprobante) && is_string($email_enviacomprobante) ? $email_enviacomprobante : '', ENT_QUOTES, 'UTF-8'); ?>" placeholder="correo@proveedor.com" autocomplete="email" required></td>
+</tr>
  <input type="hidden" style="width:200px;" class="form-control" id="validationCustom03" value="<?php echo date('d-m-Y H:i:s'); ?>" name="FECHA_DE_LLENADO">
          
 

@@ -430,6 +430,8 @@ $(document).keydown(function(event) {
 });
 
 $("#enviarSUBIRFACTURA").click(function(){
+const emailComprobante = document.getElementById('email_enviacomprobante');
+if (!emailComprobante || !emailComprobante.reportValidity()) return;
 const mantenerMensajeSubirFacturaVisible = () => {
 
     const mensaje = document.getElementById('mensajeSUBIRFACTURA');

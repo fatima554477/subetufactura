@@ -881,9 +881,13 @@ public function solocargartemp($archivo) {
 		$CONPROBANTE_TRANSFERENCIA, $ADJUNTAR_ARCHIVO_1, $IMPUESTO_HOSPEDAJE,
 		$MONTO_DEPOSITADO, $PENDIENTE_PAGO, $IVA, $NOMBRE_DEL_AYUDO,
 		$TImpuestosRetenidosIVA, $TImpuestosRetenidosISR, $descuentos,
-		$hiddensubefactura, $ENVIARRSB1p, $IPSB1p)
+		$hiddensubefactura, $ENVIARRSB1p, $IPSB1p, $email_enviacomprobante = null)
 	{
+        if (!is_string($email_enviacomprobante) || !filter_var(trim($email_enviacomprobante), FILTER_VALIDATE_EMAIL)) {
+            return 'INGRESA UN EMAIL VÁLIDO PARA EL ENVÍO DE COMPROBANTE DE PAGO';
+        }
 		$conn    = $this->db();
+        $emailSQL = mysqli_real_escape_string($conn, trim($email_enviacomprobante));
 		$session = isset($_SESSION['idPROV']) ? $_SESSION['idPROV'] : '';
 		if($session == ''){ echo "NO HAY UN PROVEEDOR SELECCIONADO"; return; }
 
@@ -920,6 +924,7 @@ public function solocargartemp($archivo) {
 		
 		STATUS_DE_PAGO = '".$STATUS_DE_PAGO."',
 		NOMBRE_DEL_EJECUTIVO = '".$NOMBRE_DEL_EJECUTIVO."',
+		email_enviacomprobante = '".$emailSQL."',
 		OBSERVACIONES_1 = '".$OBSERVACIONES_1."',
 		FECHA_DE_LLENADO = '".$FECHA_DE_LLENADO."'
 		where id = '".$IPSB1p."';";
@@ -934,7 +939,7 @@ public function solocargartemp($archivo) {
 		NOMBRE_DEL_AYUDO, TImpuestosRetenidosIVA, TImpuestosRetenidosISR, descuentos,
 		MONTO_FACTURA, TIPO_DE_MONEDA, PFORMADE_PAGO, 
 		STATUS_DE_PAGO, NOMBRE_DEL_EJECUTIVO, OBSERVACIONES_1, FECHA_DE_LLENADO,
-		idRelacion) values (
+		email_enviacomprobante, idRelacion) values (
 		'".$ADJUNTAR_FACTURA_XML."', '".$ADJUNTAR_FACTURA_PDF."',
 		'".$ADJUNTAR_COTIZACION11."', '".$CONPROBANTE_TRANSFERENCIA."',
 		'".$ADJUNTAR_ARCHIVO_1."',
@@ -945,7 +950,7 @@ public function solocargartemp($archivo) {
 		'".$NOMBRE_DEL_AYUDO."', '".$TImpuestosRetenidosIVA."', '".$TImpuestosRetenidosISR."', '".$descuentos."',
 		'".$MONTO_FACTURA."', '".$TIPO_DE_MONEDA."', '".$PFORMADE_PAGO."',
 		'".$STATUS_DE_PAGO."', '".$NOMBRE_DEL_EJECUTIVO."', '".$OBSERVACIONES_1."', '".$FECHA_DE_LLENADO."',
-		'".$session."');";
+		'".$emailSQL."', '".$session."');";
 
 		if($ENVIARRSB1p == 'ENVIARRSB1p'){
 			$this->registrar_bitacora_sb('actualizar', 'Se actualizó un registro en 02SUBETUFACTURA', $IPSB1p, '02SUBETUFACTURA');
